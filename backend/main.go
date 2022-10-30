@@ -11,8 +11,8 @@ import (
 
 var users = []models.User{
 	{
-		Name:     "Jinseo",
-		Username: "chloe.jinseo",
+		Name:     "Borat",
+		Username: "mrborat",
 	},
 }
 
@@ -49,7 +49,7 @@ func addUser(name, username string) error {
 }
 
 func main() {
-	err := addUser("Jinseo", "chloe.jinseo")
+	err := addUser("Borat", "mrborat")
 	utils.HandleFatal(err)
 	submitReview()
 }
