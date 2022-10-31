@@ -2,7 +2,7 @@ package models
 
 type Review struct {
 	Sender    User
-	Receiver  string
+	Receiver  User
 	Content   string
 	Timestamp int64
 }

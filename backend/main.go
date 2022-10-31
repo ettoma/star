@@ -14,19 +14,38 @@ var users = []models.User{
 		Name:     "Borat",
 		Username: "mrborat",
 	},
+	{
+		Name:     "Joaquin Phoenix",
+		Username: "totallyJoker",
+	},
 }
 
-func getSender() models.User {
-	return users[0]
+func getUserData(username string) (models.User, error) {
+	for _, user := range users {
+		if user.Username == username {
+			return user, nil
+		}
+	}
+	errMsg := fmt.Sprintf("user: %s not found", username)
+	return models.User{}, errors.New(errMsg)
+
 }
 
-func submitReview() {
+func submitReview(sender, receiver, content string) {
 	review := models.Review{
-
-		Content:   "Test",
+		Content:   content,
 		Timestamp: time.Now().Unix(),
 	}
-	review.Sender = getSender()
+
+	r, err := getUserData(receiver)
+	utils.HandleFatal(err)
+
+	s, err := getUserData(sender)
+	utils.HandleFatal(err)
+
+	review.Receiver = r
+	review.Sender = s
+
 	fmt.Println(review)
 
 }
@@ -49,7 +68,7 @@ func addUser(name, username string) error {
 }
 
 func main() {
-	err := addUser("Borat", "mrborat")
-	utils.HandleFatal(err)
-	submitReview()
+	// err := addUser("Borat", "mrborat")
+	// utils.HandleFatal(err)
+	submitReview("mrborat", "totallyJoker", "Jammin'")
 }
