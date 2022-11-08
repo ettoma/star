@@ -3,11 +3,19 @@ package main
 import (
 	"errors"
 	"fmt"
+	"log"
+	"net/http"
 	"time"
 
+	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
+	"github.com/gorilla/mux"
+
+	_ "github.com/lib/pq"
 )
+
+const PORT = ":8000"
 
 var users = []models.User{
 	{
@@ -67,8 +75,32 @@ func addUser(name, username string) error {
 	return nil
 }
 
+func home(w http.ResponseWriter, r *http.Request) {
+	log.Printf("\n Url: %s \n Request: %s \n Content-length: %d \n", r.URL, r.Body, r.ContentLength)
+	if r.Method != "GET" {
+		w.WriteHeader(http.StatusMethodNotAllowed)
+	}
+	fmt.Print("ok")
+
+}
+
 func main() {
-	// err := addUser("Borat", "mrborat")
-	// utils.HandleFatal(err)
-	submitReview("mrborat", "totallyJoker", "Jammin'")
+	database.OpenDb()
+	// database.GetAllUsers()
+
+	// database.DeleteUserByUsername("ettoma")
+	// database.DeleteUserById(2134123)
+
+	r := mux.NewRouter()
+	srv := &http.Server{
+		Addr:         PORT,
+		Handler:      r,
+		ReadTimeout:  time.Second * 15,
+		WriteTimeout: time.Second * 15,
+	}
+
+	r.HandleFunc("/", home)
+
+	log.Fatal(srv.ListenAndServe())
+
 }
