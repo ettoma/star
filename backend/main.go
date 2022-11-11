@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ettoma/star/database"
+	"github.com/ettoma/star/handles"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
 	"github.com/gorilla/mux"
@@ -75,21 +76,16 @@ func addUser(name, username string) error {
 	return nil
 }
 
-func home(w http.ResponseWriter, r *http.Request) {
-	log.Printf("\n Url: %s \n Request: %s \n Content-length: %d \n", r.URL, r.Body, r.ContentLength)
-	if r.Method != "GET" {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-	}
-	fmt.Print("ok")
+func loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log.Printf("\n Url: %s \n Request: %s \n Content-length: %d \n", r.URL, r.Body, r.ContentLength)
+		next.ServeHTTP(w, r)
+	})
 
 }
 
 func main() {
 	database.OpenDb()
-	// database.GetAllUsers()
-
-	// database.DeleteUserByUsername("ettoma")
-	// database.DeleteUserById(2134123)
 
 	r := mux.NewRouter()
 	srv := &http.Server{
@@ -99,7 +95,11 @@ func main() {
 		WriteTimeout: time.Second * 15,
 	}
 
-	r.HandleFunc("/", home)
+	r.HandleFunc("/", handles.Home).Methods("GET")
+	r.HandleFunc("/users", handles.GetAllUsers).Methods("GET")
+	r.HandleFunc("/users", handles.AddUser).Methods("POST")
+
+	r.Use(loggingMiddleware)
 
 	log.Fatal(srv.ListenAndServe())
 

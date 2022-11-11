@@ -2,9 +2,9 @@ package database
 
 import (
 	"database/sql"
-	"fmt"
 	"os"
 
+	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
 )
 
@@ -17,7 +17,9 @@ func OpenDb() {
 	utils.HandleFatal(err)
 }
 
-func InsertUser(name, username string, id int) {
+func AddUser(name, username string) {
+
+	id := len(GetAllUsers()) + 1
 
 	_, err = db.Exec(`INSERT INTO users VALUES ($1,$2,$3)`, name, username, id)
 
@@ -25,17 +27,31 @@ func InsertUser(name, username string, id int) {
 
 }
 
-func GetAllUsers() {
+func GetAllUsers() []models.User {
 
-	result := db.QueryRow("SELECT * FROM users")
+	rows, err := db.Query("SELECT * FROM users")
 
-	utils.HandleWarning(result.Err())
-	var name string
-	var username string
-	var id int
-	utils.HandleWarning(result.Scan(&name, &username, &id))
+	utils.HandleWarning(err)
+	defer rows.Close()
 
-	fmt.Printf("Name: %s \nUsername: %s \nID: %d", name, username, id)
+	var users []models.User
+
+	for rows.Next() {
+
+		var name string
+		var username string
+		var id int
+		utils.HandleWarning(rows.Scan(&name, &username, &id))
+		// fmt.Printf("Name: %s \nUsername: %s \nID: %d\n", name, username, id)
+
+		users = append(users, models.User{
+			Name:     name,
+			Username: username,
+			Id:       id,
+		})
+	}
+	return users
+
 }
 
 func DeleteUserByUsername(username string) {
