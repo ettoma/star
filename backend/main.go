@@ -78,7 +78,7 @@ func addUser(name, username string) error {
 
 func loggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		log.Printf("\n Url: %s \n Request: %s \n Content-length: %d \n", r.URL, r.Body, r.ContentLength)
+		log.Printf("\n Url: %s \n Method: %s \n Content-length: %d \n", r.URL, r.Method, r.ContentLength)
 		next.ServeHTTP(w, r)
 	})
 
@@ -98,6 +98,7 @@ func main() {
 	r.HandleFunc("/", handles.Home).Methods("GET")
 	r.HandleFunc("/users", handles.GetAllUsers).Methods("GET")
 	r.HandleFunc("/users", handles.AddUser).Methods("POST")
+	r.HandleFunc("/users", handles.DeleteUserById).Methods("DELETE")
 
 	r.Use(loggingMiddleware)
 
