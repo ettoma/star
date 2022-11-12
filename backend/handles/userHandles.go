@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
+	"github.com/gorilla/mux"
 )
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -21,6 +23,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write(json_data)
 }
 
+// TODO : implement timestamp for creation
 func AddUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
@@ -48,6 +51,41 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 		utils.HandleWarning(err)
 		w.Write(data)
 
+	}
+
+}
+
+func GetUserById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	var users = database.GetAllUsers()
+
+	id := mux.Vars(r)
+
+	idInt, err := strconv.Atoi(id["id"])
+	utils.HandleWarning(err)
+
+	for _, user := range users {
+		if user.Id == idInt {
+			w.WriteHeader(http.StatusOK)
+			responseUser := models.User{
+				Name:     user.Name,
+				Username: user.Username,
+				Id:       user.Id,
+			}
+			userJson, err := json.Marshal(responseUser)
+			utils.HandleWarning(err)
+			w.Write(userJson)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+			response := models.SimpleResponse{
+				Message: "User not found",
+				Status:  http.StatusNotFound,
+				Success: false,
+			}
+			responseJson, err := json.Marshal(response)
+			utils.HandleWarning(err)
+			w.Write(responseJson)
+		}
 	}
 
 }
