@@ -3,7 +3,9 @@ package database
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"os"
+	"strings"
 
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
@@ -20,14 +22,19 @@ func OpenDb() {
 
 func AddUser(name, username string) (models.User, error) {
 
-	//TODO : normalise characters to check for lower/upper case conflicts
 	var users = GetAllUsers()
+	var id int
+	usernameLower := strings.ToLower(username)
 
-	//TODO : get id from last inserted record, not from table length
-	id := len(users) + 1
+	if len(users) > 0 {
+		id = users[len(users)-1].Id + 1
+	} else {
+		id = 1
+	}
 
 	for _, user := range users {
-		if username == user.Username {
+		user.Username = strings.ToLower(user.Username)
+		if usernameLower == user.Username {
 			return models.User{}, errors.New("username already exists")
 		}
 	}
@@ -66,26 +73,40 @@ func GetAllUsers() []models.User {
 
 }
 
-func DeleteAll() {
+func deleteAll() {
 
 	_, err = db.Exec(`DELETE FROM users`)
 	utils.HandleWarning(err)
 }
 
-func DeleteUserById(id int) {
+func DeleteUserById(id int) (bool, error) {
 
-	//TODO : implement ID check
+	users := GetAllUsers()
 
-	_, err = db.Exec(`DELETE FROM users WHERE id = $1`, id)
-	utils.HandleWarning(err)
+	for _, user := range users {
+		if user.Id == id {
+			_, err = db.Exec(`DELETE FROM users WHERE id = $1`, id)
+			utils.HandleWarning(err)
+			fmt.Print("user deleted")
+			return true, nil
+		}
+	}
+	return false, errors.New("user not found")
 
 }
 
-func DeleteUserByUsername(username string) {
+func DeleteUserByUsername(username string) (bool, error) {
 
-	//TODO : implement username check
+	users := GetAllUsers()
 
-	_, err = db.Exec(`DELETE FROM users WHERE username = $1`, username)
-	utils.HandleWarning(err)
+	for _, user := range users {
+		if user.Username == username {
+			_, err = db.Exec(`DELETE FROM users WHERE username = $1`, username)
+			utils.HandleWarning(err)
+			fmt.Print("user deleted")
+			return true, nil
+		}
+	}
+	return false, errors.New("user not found")
 
 }
