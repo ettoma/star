@@ -160,3 +160,67 @@ func DeleteUserByUsername(w http.ResponseWriter, r *http.Request) {
 		w.Write(responseJson)
 	}
 }
+
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
+
+	w.Header().Set("Content-Type", "application/json")
+
+	var u map[string]interface{}
+
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+
+	err := json.NewDecoder(r.Body).Decode(&u)
+	utils.HandleFatal(err)
+
+	var success bool
+
+	for k := range u {
+		if k == "username" {
+			success, err = database.DeleteUserByUsername(fmt.Sprintf("%s", u["username"]))
+			handleSuccess(success, w)
+			break
+		} else if k == "id" {
+			value, err := strconv.Atoi(fmt.Sprintf("%v", u["id"]))
+			utils.HandleWarning(err)
+			success, err = database.DeleteUserById(value)
+			handleSuccess(success, w)
+			break
+		} else {
+			w.WriteHeader(http.StatusBadRequest)
+			response := models.SimpleResponse{
+				Message: "invalid or malformed request",
+				Status:  http.StatusBadRequest,
+				Success: success,
+			}
+			responseJson, err := json.Marshal(response)
+			utils.HandleWarning(err)
+			w.Write(responseJson)
+			break
+		}
+	}
+
+}
+
+func handleSuccess(success bool, w http.ResponseWriter) {
+	if success {
+		w.WriteHeader(http.StatusOK)
+		response := models.SimpleResponse{
+			Message: "user deleted",
+			Status:  http.StatusOK,
+			Success: success,
+		}
+		responseJson, err := json.Marshal(response)
+		utils.HandleWarning(err)
+		w.Write(responseJson)
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		response := models.SimpleResponse{
+			Message: "user not found",
+			Status:  http.StatusNotFound,
+			Success: success,
+		}
+		responseJson, err := json.Marshal(response)
+		utils.HandleWarning(err)
+		w.Write(responseJson)
+	}
+}

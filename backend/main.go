@@ -29,7 +29,7 @@ func main() {
 	r.HandleFunc("/users", handles.GetAllUsers).Methods("GET")
 	r.HandleFunc("/users/{id}", handles.GetUserById).Methods("GET")
 	r.HandleFunc("/users", handles.AddUser).Methods("POST")
-	r.HandleFunc("/users", handles.DeleteUserByUsername).Methods("DELETE") // TODO: merge deleteById and deleteByUsername
+	r.HandleFunc("/users", handles.DeleteUser).Methods("DELETE")
 
 	r.Use(utils.LoggingMiddleware)
 
