@@ -23,7 +23,6 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	w.Write(json_data)
 }
 
-// TODO : implement timestamp for creation
 func AddUser(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
@@ -37,7 +36,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	createdUser, err := database.AddUser(newUser.Name, newUser.Username)
 	if err != nil {
 		w.WriteHeader(http.StatusConflict)
-		response := models.SimpleResponse{
+		response := models.DefaultResponse{
 			Message: err.Error(),
 			Status:  http.StatusConflict,
 			Success: false,
@@ -57,36 +56,48 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var users = database.GetAllUsers()
+	// var users = database.GetAllUsers()
 
 	id := mux.Vars(r)
 
 	idInt, err := strconv.Atoi(id["id"])
 	utils.HandleWarning(err)
 
-	for _, user := range users {
-		if user.Id == idInt {
-			w.WriteHeader(http.StatusOK)
-			responseUser := models.User{
-				Name:     user.Name,
-				Username: user.Username,
-				Id:       user.Id,
-			}
-			userJson, err := json.Marshal(responseUser)
-			utils.HandleWarning(err)
-			w.Write(userJson)
-		} else {
-			w.WriteHeader(http.StatusNotFound)
-			response := models.SimpleResponse{
-				Message: "User not found",
-				Status:  http.StatusNotFound,
-				Success: false,
-			}
-			responseJson, err := json.Marshal(response)
-			utils.HandleWarning(err)
-			w.Write(responseJson)
-		}
-	}
+	foundUser, _ := database.GetUserById(idInt)
+
+	fmt.Print(foundUser)
+
+	// //TODO : gracefully handle when user is not found
+	// for _, user := range users {
+	// 	if user.Id == idInt {
+	// 		w.WriteHeader(http.StatusOK)
+	// 		responseUser := models.User{
+	// 			Name:      user.Name,
+	// 			Username:  user.Username,
+	// 			Id:        user.Id,
+	// 			CreatedAt: user.CreatedAt,
+	// 		}
+	// 		userJson, err := json.Marshal(responseUser)
+	// 		utils.HandleWarning(err)
+	// 		w.Write(userJson)
+	// 		break
+	// 	}
+	//  else {
+	// 	w.WriteHeader(http.StatusNotFound)
+	// 	response := models.DefaultResponse{
+	// 		Message: "User not found",
+	// 		Status:  http.StatusNotFound,
+	// 		Success: false,
+	// 	}
+	// 	responseJson, err := json.Marshal(response)
+	// 	utils.HandleWarning(err)
+	// 	w.Write(responseJson)
+	// }
+}
+
+// }
+
+func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 
 }
 
@@ -104,7 +115,7 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 
 	if success {
 		w.WriteHeader(http.StatusOK)
-		response := models.SimpleResponse{
+		response := models.DefaultResponse{
 			Message: fmt.Sprintf("user with id #%d deleted", id["id"]),
 			Status:  http.StatusOK,
 			Success: success,
@@ -114,7 +125,7 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 		w.Write(responseJson)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
-		response := models.SimpleResponse{
+		response := models.DefaultResponse{
 			Message: fmt.Sprintf("user with id #%d not found", id["id"]),
 			Status:  http.StatusNotFound,
 			Success: success,
@@ -140,7 +151,7 @@ func DeleteUserByUsername(w http.ResponseWriter, r *http.Request) {
 
 	if success {
 		w.WriteHeader(http.StatusOK)
-		response := models.SimpleResponse{
+		response := models.DefaultResponse{
 			Message: fmt.Sprintf("user with username: %s deleted", username["username"]),
 			Status:  http.StatusOK,
 			Success: success,
@@ -150,7 +161,7 @@ func DeleteUserByUsername(w http.ResponseWriter, r *http.Request) {
 		w.Write(responseJson)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
-		response := models.SimpleResponse{
+		response := models.DefaultResponse{
 			Message: fmt.Sprintf("user with username: %s not found", username["username"]),
 			Status:  http.StatusNotFound,
 			Success: success,
@@ -187,7 +198,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 			break
 		} else {
 			w.WriteHeader(http.StatusBadRequest)
-			response := models.SimpleResponse{
+			response := models.DefaultResponse{
 				Message: "invalid or malformed request",
 				Status:  http.StatusBadRequest,
 				Success: success,
@@ -204,7 +215,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 func handleSuccess(success bool, w http.ResponseWriter) {
 	if success {
 		w.WriteHeader(http.StatusOK)
-		response := models.SimpleResponse{
+		response := models.DefaultResponse{
 			Message: "user deleted",
 			Status:  http.StatusOK,
 			Success: success,
@@ -214,7 +225,7 @@ func handleSuccess(success bool, w http.ResponseWriter) {
 		w.Write(responseJson)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
-		response := models.SimpleResponse{
+		response := models.DefaultResponse{
 			Message: "user not found",
 			Status:  http.StatusNotFound,
 			Success: success,

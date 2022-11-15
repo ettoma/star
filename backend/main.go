@@ -30,6 +30,9 @@ func main() {
 	r.HandleFunc("/users/{id}", handles.GetUserById).Methods("GET")
 	r.HandleFunc("/users", handles.AddUser).Methods("POST")
 	r.HandleFunc("/users", handles.DeleteUser).Methods("DELETE")
+	//TODO: implement Patch user handle
+
+	r.HandleFunc("/kudos", handles.AddKudos).Methods("POST")
 
 	r.Use(utils.LoggingMiddleware)
 

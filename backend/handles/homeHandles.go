@@ -6,5 +6,5 @@ import (
 )
 
 func Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprint(w, "Home")
+	fmt.Fprint(w, "Welcome")
 }
