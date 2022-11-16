@@ -71,17 +71,38 @@ func GetUserById(u int) (models.User, error) {
 	rows := db.QueryRow("SELECT * FROM users WHERE id = $1", u)
 	utils.HandleWarning(err)
 
-	// defer rows.Close()
+	var name string
+	var username string
+	var id int
+	var createdAt int64
+
+	err := rows.Scan(&name, &username, &id, &createdAt)
+
+	if err != nil {
+		return models.User{}, err
+	} else {
+		return models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(createdAt, 0)}, nil
+	}
+
+}
+
+func GetUserByUsername(u string) (models.User, error) {
+	rows := db.QueryRow("SELECT * FROM users WHERE username = $1", u)
+	utils.HandleWarning(err)
 
 	var name string
 	var username string
 	var id int
 	var createdAt int64
 
-	// rows.Next()
-	utils.HandleWarning(rows.Scan(&name, &username, &id, &createdAt))
+	err := rows.Scan(&name, &username, &id, &createdAt)
 
-	return models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(createdAt, 0)}, nil
+	if err != nil {
+		return models.User{}, err
+	} else {
+		return models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(createdAt, 0)}, nil
+	}
+
 }
 
 func deleteAll() {

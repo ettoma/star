@@ -6,7 +6,7 @@ import (
 	"github.com/ettoma/star/models"
 )
 
-func AddKudos(sender, receiver, content string) (models.Kudos, error) {
+func AddKudos(sender, receiver models.User, content string) (models.Kudos, error) {
 
 	// users := GetAllUsers()
 

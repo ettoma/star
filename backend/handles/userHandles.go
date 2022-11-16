@@ -56,33 +56,50 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	// var users = database.GetAllUsers()
 
 	id := mux.Vars(r)
 
 	idInt, err := strconv.Atoi(id["id"])
 	utils.HandleWarning(err)
 
-	foundUser, _ := database.GetUserById(idInt)
+	user, err := database.GetUserById(idInt)
 
-	fmt.Print(foundUser)
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		response := models.DefaultResponse{
+			Message: "User not found",
+			Status:  http.StatusNotFound,
+			Success: false,
+		}
+		responseJson, err := json.Marshal(response)
+		utils.HandleWarning(err)
+		w.Write(responseJson)
+	} else {
+		w.WriteHeader(http.StatusOK)
+		responseUser := models.User{
+			Name:      user.Name,
+			Username:  user.Username,
+			Id:        user.Id,
+			CreatedAt: user.CreatedAt,
+		}
+		userJson, err := json.Marshal(responseUser)
+		utils.HandleWarning(err)
+		w.Write(userJson)
+	}
+}
 
-	// //TODO : gracefully handle when user is not found
-	// for _, user := range users {
-	// 	if user.Id == idInt {
-	// 		w.WriteHeader(http.StatusOK)
-	// 		responseUser := models.User{
-	// 			Name:      user.Name,
-	// 			Username:  user.Username,
-	// 			Id:        user.Id,
-	// 			CreatedAt: user.CreatedAt,
-	// 		}
-	// 		userJson, err := json.Marshal(responseUser)
-	// 		utils.HandleWarning(err)
-	// 		w.Write(userJson)
-	// 		break
-	// 	}
-	//  else {
+// TODO implement this:
+func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
+	// w.Header().Set("Content-Type", "application/json")
+
+	// vars := mux.Vars(r)
+
+	// qUsername := vars["username"]
+	// // utils.HandleWarning(err)
+
+	// user, err := database.GetUserByUsername(qUsername)
+
+	// if err != nil {
 	// 	w.WriteHeader(http.StatusNotFound)
 	// 	response := models.DefaultResponse{
 	// 		Message: "User not found",
@@ -92,13 +109,18 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	// 	responseJson, err := json.Marshal(response)
 	// 	utils.HandleWarning(err)
 	// 	w.Write(responseJson)
+	// } else {
+	// 	w.WriteHeader(http.StatusOK)
+	// 	responseUser := models.User{
+	// 		Name:      user.Name,
+	// 		Username:  user.Username,
+	// 		Id:        user.Id,
+	// 		CreatedAt: user.CreatedAt,
+	// 	}
+	// 	userJson, err := json.Marshal(responseUser)
+	// 	utils.HandleWarning(err)
+	// 	w.Write(userJson)
 	// }
-}
-
-// }
-
-func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
-
 }
 
 func DeleteUserById(w http.ResponseWriter, r *http.Request) {
