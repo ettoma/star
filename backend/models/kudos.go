@@ -1,8 +1,9 @@
 package models
 
 type Kudos struct {
-	Sender    User   `json:"sender"`
-	Receiver  User   `json:"receiver"`
+	Sender    string `json:"sender"`
+	Receiver  string `json:"receiver"`
 	Content   string `json:"content"`
+	Id        int    `json:"id"`
 	Timestamp int64  `json:"timestamp"`
 }

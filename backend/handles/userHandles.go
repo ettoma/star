@@ -88,41 +88,6 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// TODO implement this:
-func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
-	// w.Header().Set("Content-Type", "application/json")
-
-	// vars := mux.Vars(r)
-
-	// qUsername := vars["username"]
-	// // utils.HandleWarning(err)
-
-	// user, err := database.GetUserByUsername(qUsername)
-
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusNotFound)
-	// 	response := models.DefaultResponse{
-	// 		Message: "User not found",
-	// 		Status:  http.StatusNotFound,
-	// 		Success: false,
-	// 	}
-	// 	responseJson, err := json.Marshal(response)
-	// 	utils.HandleWarning(err)
-	// 	w.Write(responseJson)
-	// } else {
-	// 	w.WriteHeader(http.StatusOK)
-	// 	responseUser := models.User{
-	// 		Name:      user.Name,
-	// 		Username:  user.Username,
-	// 		Id:        user.Id,
-	// 		CreatedAt: user.CreatedAt,
-	// 	}
-	// 	userJson, err := json.Marshal(responseUser)
-	// 	utils.HandleWarning(err)
-	// 	w.Write(userJson)
-	// }
-}
-
 func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")

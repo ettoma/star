@@ -17,16 +17,21 @@ func AddKudos(w http.ResponseWriter, r *http.Request) {
 
 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 
-	// TODO : fix json unmarshaling
 	err := json.NewDecoder(r.Body).Decode(&newKudos)
 	utils.HandleWarning(err)
 
-	sender, err := database.GetUserByUsername(newKudos.Sender.Username)
-	receiver, err := database.GetUserByUsername(newKudos.Receiver.Username)
-
-	fmt.Print(sender, receiver)
-
-	kudos, err := database.AddKudos(sender, receiver, newKudos.Content)
+	kudos, err := database.AddKudos(newKudos.Sender, newKudos.Receiver, newKudos.Content)
 
 	fmt.Print(kudos)
+}
+
+func GetAllKudos(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	kudos := database.GetAllKudos()
+
+	json_data, err := json.Marshal(kudos)
+	utils.HandleWarning(err)
+	w.Write(json_data)
+
 }
