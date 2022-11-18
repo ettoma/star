@@ -2,12 +2,12 @@ package handles
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
+	"github.com/gorilla/mux"
 )
 
 func AddKudos(w http.ResponseWriter, r *http.Request) {
@@ -20,9 +20,23 @@ func AddKudos(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newKudos)
 	utils.HandleWarning(err)
 
-	kudos, err := database.AddKudos(newKudos.Sender, newKudos.Receiver, newKudos.Content)
+	_, err = database.GetUserByUsername(newKudos.Sender)
+	if err != nil {
+		utils.HandleUserNotFound(w)
 
-	fmt.Print(kudos)
+	}
+	_, err = database.GetUserByUsername(newKudos.Receiver)
+	if err != nil {
+		utils.HandleUserNotFound(w)
+	} else {
+
+		kudos, err := database.AddKudos(newKudos.Sender, newKudos.Receiver, newKudos.Content)
+
+		json_data, err := json.Marshal(kudos)
+		utils.HandleWarning(err)
+		w.Write(json_data)
+	}
+
 }
 
 func GetAllKudos(w http.ResponseWriter, r *http.Request) {
@@ -33,5 +47,24 @@ func GetAllKudos(w http.ResponseWriter, r *http.Request) {
 	json_data, err := json.Marshal(kudos)
 	utils.HandleWarning(err)
 	w.Write(json_data)
+
+}
+
+func GetKudosPerUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	userMap := mux.Vars(r)
+	user := userMap["username"]
+
+	kudos, err := database.GetKudosPerUser(user)
+
+	if err != nil {
+		utils.HandleUserNotFound(w)
+	} else {
+
+		json_data, err := json.Marshal(kudos)
+		utils.HandleWarning(err)
+		w.Write(json_data)
+	}
 
 }

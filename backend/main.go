@@ -34,6 +34,7 @@ func main() {
 
 	r.HandleFunc("/kudos", handles.GetAllKudos).Methods("GET")
 	r.HandleFunc("/kudos", handles.AddKudos).Methods("POST")
+	r.HandleFunc("/kudos/users/{username}", handles.GetKudosPerUser).Methods("GET")
 
 	r.Use(utils.LoggingMiddleware)
 
