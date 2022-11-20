@@ -2,6 +2,7 @@ package handles
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/ettoma/star/database"
@@ -11,7 +12,6 @@ import (
 
 func AddKudos(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
 	var newKudos models.Kudos
 
 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
@@ -21,14 +21,18 @@ func AddKudos(w http.ResponseWriter, r *http.Request) {
 
 	sender, _ := database.GetUserByUsername(newKudos.Sender)
 	if sender == nil {
-		utils.HandleUserNotFound(w, "Sender")
+		utils.HandleNotFound(w, "Sender")
 	}
 	receiver, _ := database.GetUserByUsername(newKudos.Receiver)
 	if receiver == nil {
-		utils.HandleUserNotFound(w, "Receiver")
+		utils.HandleNotFound(w, "Receiver")
 	}
 
-	if sender != nil && receiver != nil {
+	if len(newKudos.Content) == 0 {
+		utils.HandleNotFound(w, "Content")
+	}
+
+	if sender != nil && receiver != nil && len(newKudos.Content) > 0 {
 		kudos, err := database.AddKudos(newKudos.Sender, newKudos.Receiver, newKudos.Content)
 		utils.HandleWarning(err)
 		utils.WriteJsonResponse(kudos, w)
@@ -37,7 +41,6 @@ func AddKudos(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllKudos(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	kudos := database.GetAllKudos()
 
@@ -46,7 +49,6 @@ func GetAllKudos(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetKudosPerUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var user map[string]string
 	var kudos []*models.Kudos
@@ -60,7 +62,7 @@ func GetKudosPerUser(w http.ResponseWriter, r *http.Request) {
 
 		kudos, err = database.GetKudosPerSender(user["sender"])
 		if err != nil {
-			utils.HandleUserNotFound(w, "Sender")
+			utils.HandleNotFound(w, "Sender")
 		} else {
 			utils.WriteJsonResponse(kudos, w)
 		}
@@ -69,10 +71,34 @@ func GetKudosPerUser(w http.ResponseWriter, r *http.Request) {
 
 		kudos, err = database.GetKudosPerReceiver(user["receiver"])
 		if err != nil {
-			utils.HandleUserNotFound(w, "Receiver")
+			utils.HandleNotFound(w, "Receiver")
 		} else {
 			utils.WriteJsonResponse(kudos, w)
 		}
+	}
+
+}
+
+func DeleteKudos(w http.ResponseWriter, r *http.Request) {
+	var id map[string]int
+
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+
+	err := json.NewDecoder(r.Body).Decode(&id)
+	utils.HandleWarning(err)
+
+	success, err := database.DeleteKudos(id["id"])
+
+	if success {
+		w.WriteHeader(http.StatusOK)
+		response := models.DefaultResponse{
+			Message: "kudos deleted",
+			Status:  http.StatusOK,
+			Success: success,
+		}
+		utils.WriteJsonResponse(response, w)
+	} else {
+		utils.HandleNotFound(w, fmt.Sprintf("Kudos with id %d", id["id"]))
 	}
 
 }

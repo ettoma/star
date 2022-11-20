@@ -21,10 +21,10 @@ func HandleFatal(err error) {
 	}
 }
 
-func HandleUserNotFound(w http.ResponseWriter, userType string) {
+func HandleNotFound(w http.ResponseWriter, searchKey string) {
 	w.WriteHeader(http.StatusNotFound)
 	response := models.DefaultResponse{
-		Message: fmt.Sprintf("%s not found", userType),
+		Message: fmt.Sprintf("%s not found", searchKey),
 		Status:  http.StatusNotFound,
 		Success: false,
 	}

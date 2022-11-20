@@ -2,7 +2,6 @@ package database
 
 import (
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -109,25 +108,17 @@ func GetUserByUsername(u string) (*models.User, error) {
 
 }
 
-func deleteAll() {
-
-	_, err = db.Exec(`DELETE FROM users`)
-	utils.HandleWarning(err)
-}
-
 func DeleteUserById(id int) (bool, error) {
 
-	users := GetAllUsers()
+	res, _ := db.Exec(`DELETE FROM users WHERE id = $1`, id)
+	deletedRows, _ := res.RowsAffected()
 
-	for _, user := range users {
-		if user.Id == id {
-			_, err = db.Exec(`DELETE FROM users WHERE id = $1`, id)
-			utils.HandleWarning(err)
-			fmt.Print("user deleted")
-			return true, nil
-		}
+	if deletedRows == 0 {
+
+		return false, errors.New("user not found")
+	} else {
+		return true, nil
 	}
-	return false, errors.New("user not found")
 
 }
 
@@ -139,7 +130,6 @@ func DeleteUserByUsername(username string) (bool, error) {
 		if user.Username == username {
 			_, err = db.Exec(`DELETE FROM users WHERE username = $1`, username)
 			utils.HandleWarning(err)
-			fmt.Print("user deleted")
 			return true, nil
 		}
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func AddKudos(sender, receiver string, content string) (*models.Kudos, error) {
-	//TODO implement fields verification (length)
+
 	var kudos = GetAllKudos()
 	var id int
 	senderLower := strings.ToLower(sender)
@@ -119,4 +119,17 @@ func GetKudosPerSender(user string) ([]*models.Kudos, error) {
 		return nil, errors.New("No kudos found")
 	}
 	return kudos, nil
+}
+
+func DeleteKudos(id int) (bool, error) {
+	res, _ := db.Exec(`DELETE FROM kudos WHERE id = $1`, id)
+	deletedRows, _ := res.RowsAffected()
+
+	if deletedRows == 0 {
+
+		return false, errors.New("kudos not found")
+	} else {
+		return true, nil
+	}
+
 }

@@ -32,11 +32,13 @@ func main() {
 	r.HandleFunc("/users", handles.DeleteUser).Methods("DELETE")
 	//TODO: implement Patch user handle
 
-	r.HandleFunc("/kudos", handles.AddKudos).Methods("POST")
 	r.HandleFunc("/kudos", handles.GetAllKudos).Methods("GET")
+	r.HandleFunc("/kudos", handles.AddKudos).Methods("POST")
 	r.HandleFunc("/kudos/users", handles.GetKudosPerUser).Methods("GET")
+	r.HandleFunc("/kudos", handles.DeleteKudos).Methods("DELETE")
 
 	r.Use(utils.LoggingMiddleware)
+	r.Use(utils.ContentTypeMiddleware)
 
 	utils.HandleFatal(srv.ListenAndServe())
 

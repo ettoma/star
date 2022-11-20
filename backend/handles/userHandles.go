@@ -15,14 +15,11 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 	users := database.GetAllUsers()
 
-	w.Header().Set("Content-Type", "application/json")
-
 	utils.WriteJsonResponse(users, w)
 }
 
 func AddUser(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
 	var newUser models.User
 
 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
@@ -58,7 +55,6 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 
 	var id map[string]int
 
@@ -70,7 +66,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	user, err := database.GetUserById(id["id"])
 
 	if err != nil {
-		utils.HandleUserNotFound(w, fmt.Sprintf("User with id %d", id["id"]))
+		utils.HandleNotFound(w, fmt.Sprintf("User with id %d", id["id"]))
 	} else {
 		w.WriteHeader(http.StatusOK)
 		responseUser := models.User{
@@ -85,7 +81,6 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 
 func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
 	var id map[string]int
 
 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
@@ -104,14 +99,13 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 		}
 		utils.WriteJsonResponse(response, w)
 	} else {
-		utils.HandleUserNotFound(w, fmt.Sprintf("User with id %d", id["id"]))
+		utils.HandleNotFound(w, fmt.Sprintf("User with id %d", id["id"]))
 	}
 
 }
 
 func DeleteUserByUsername(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json")
 	var username map[string]string
 
 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
@@ -130,13 +124,11 @@ func DeleteUserByUsername(w http.ResponseWriter, r *http.Request) {
 		}
 		utils.WriteJsonResponse(response, w)
 	} else {
-		utils.HandleUserNotFound(w, fmt.Sprintf("User with username %s", username["username"]))
+		utils.HandleNotFound(w, fmt.Sprintf("User with username %s", username["username"]))
 	}
 }
 
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
-
-	w.Header().Set("Content-Type", "application/json")
 
 	var u map[string]interface{}
 
