@@ -7,7 +7,6 @@ import (
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
-	"github.com/gorilla/mux"
 )
 
 func AddKudos(w http.ResponseWriter, r *http.Request) {
@@ -20,21 +19,19 @@ func AddKudos(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newKudos)
 	utils.HandleWarning(err)
 
-	_, err = database.GetUserByUsername(newKudos.Sender)
-	if err != nil {
-		utils.HandleUserNotFound(w)
-
+	sender, _ := database.GetUserByUsername(newKudos.Sender)
+	if sender == nil {
+		utils.HandleUserNotFound(w, "Sender")
 	}
-	_, err = database.GetUserByUsername(newKudos.Receiver)
-	if err != nil {
-		utils.HandleUserNotFound(w)
-	} else {
+	receiver, _ := database.GetUserByUsername(newKudos.Receiver)
+	if receiver == nil {
+		utils.HandleUserNotFound(w, "Receiver")
+	}
 
+	if sender != nil && receiver != nil {
 		kudos, err := database.AddKudos(newKudos.Sender, newKudos.Receiver, newKudos.Content)
-
-		json_data, err := json.Marshal(kudos)
 		utils.HandleWarning(err)
-		w.Write(json_data)
+		utils.WriteJsonResponse(kudos, w)
 	}
 
 }
@@ -44,27 +41,38 @@ func GetAllKudos(w http.ResponseWriter, r *http.Request) {
 
 	kudos := database.GetAllKudos()
 
-	json_data, err := json.Marshal(kudos)
-	utils.HandleWarning(err)
-	w.Write(json_data)
+	utils.WriteJsonResponse(kudos, w)
 
 }
 
 func GetKudosPerUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	userMap := mux.Vars(r)
-	user := userMap["username"]
+	var user map[string]string
+	var kudos []*models.Kudos
 
-	kudos, err := database.GetKudosPerUser(user)
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 
-	if err != nil {
-		utils.HandleUserNotFound(w)
-	} else {
+	err := json.NewDecoder(r.Body).Decode(&user)
+	utils.HandleWarning(err)
 
-		json_data, err := json.Marshal(kudos)
-		utils.HandleWarning(err)
-		w.Write(json_data)
+	if user["sender"] != "" {
+
+		kudos, err = database.GetKudosPerSender(user["sender"])
+		if err != nil {
+			utils.HandleUserNotFound(w, "Sender")
+		} else {
+			utils.WriteJsonResponse(kudos, w)
+		}
+
+	} else if user["receiver"] != "" {
+
+		kudos, err = database.GetKudosPerReceiver(user["receiver"])
+		if err != nil {
+			utils.HandleUserNotFound(w, "Receiver")
+		} else {
+			utils.WriteJsonResponse(kudos, w)
+		}
 	}
 
 }

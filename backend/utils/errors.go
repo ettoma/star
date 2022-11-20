@@ -2,6 +2,7 @@ package utils
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -20,10 +21,10 @@ func HandleFatal(err error) {
 	}
 }
 
-func HandleUserNotFound(w http.ResponseWriter) {
+func HandleUserNotFound(w http.ResponseWriter, userType string) {
 	w.WriteHeader(http.StatusNotFound)
 	response := models.DefaultResponse{
-		Message: "User not found",
+		Message: fmt.Sprintf("%s not found", userType),
 		Status:  http.StatusNotFound,
 		Success: false,
 	}

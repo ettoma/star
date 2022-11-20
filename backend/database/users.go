@@ -10,7 +10,11 @@ import (
 	"github.com/ettoma/star/utils"
 )
 
-func AddUser(name, username string) (models.User, error) {
+func AddUser(name, username string) (*models.User, error) {
+
+	if len(name) <= 3 || len(username) <= 3 {
+		return nil, errors.New("name or username too short (min. 4 char)")
+	}
 
 	var users = GetAllUsers()
 	var id int
@@ -25,7 +29,7 @@ func AddUser(name, username string) (models.User, error) {
 	for _, user := range users {
 		user.Username = strings.ToLower(user.Username)
 		if usernameLower == user.Username {
-			return models.User{}, errors.New("username already exists")
+			return nil, errors.New("username already exists")
 		}
 	}
 
@@ -35,18 +39,18 @@ func AddUser(name, username string) (models.User, error) {
 
 	utils.HandleWarning(err)
 
-	return models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(ts, 0)}, nil
+	return &models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(ts, 0)}, nil
 
 }
 
-func GetAllUsers() []models.User {
+func GetAllUsers() []*models.User {
 
 	rows, err := db.Query("SELECT * FROM users")
 
 	utils.HandleWarning(err)
 	defer rows.Close()
 
-	var users []models.User
+	var users []*models.User
 
 	for rows.Next() {
 
@@ -56,7 +60,7 @@ func GetAllUsers() []models.User {
 		var createdAt int64
 		utils.HandleWarning(rows.Scan(&name, &username, &id, &createdAt))
 
-		users = append(users, models.User{
+		users = append(users, &models.User{
 			Name:      name,
 			Username:  username,
 			Id:        id,
@@ -67,7 +71,7 @@ func GetAllUsers() []models.User {
 
 }
 
-func GetUserById(u int) (models.User, error) {
+func GetUserById(u int) (*models.User, error) {
 	rows := db.QueryRow("SELECT * FROM users WHERE id = $1", u)
 	utils.HandleWarning(err)
 
@@ -79,14 +83,14 @@ func GetUserById(u int) (models.User, error) {
 	err := rows.Scan(&name, &username, &id, &createdAt)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	} else {
-		return models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(createdAt, 0)}, nil
+		return &models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(createdAt, 0)}, nil
 	}
 
 }
 
-func GetUserByUsername(u string) (models.User, error) {
+func GetUserByUsername(u string) (*models.User, error) {
 	rows := db.QueryRow("SELECT * FROM users WHERE username = $1", u)
 	utils.HandleWarning(err)
 
@@ -98,9 +102,9 @@ func GetUserByUsername(u string) (models.User, error) {
 	err := rows.Scan(&name, &username, &id, &createdAt)
 
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	} else {
-		return models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(createdAt, 0)}, nil
+		return &models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(createdAt, 0)}, nil
 	}
 
 }

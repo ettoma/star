@@ -9,7 +9,7 @@ import (
 	"github.com/ettoma/star/utils"
 )
 
-func AddKudos(sender, receiver string, content string) (models.Kudos, error) {
+func AddKudos(sender, receiver string, content string) (*models.Kudos, error) {
 	//TODO implement fields verification (length)
 	var kudos = GetAllKudos()
 	var id int
@@ -28,16 +28,16 @@ func AddKudos(sender, receiver string, content string) (models.Kudos, error) {
 
 	utils.HandleWarning(err)
 
-	return models.Kudos{Sender: senderLower, Receiver: receiverLower, Content: content, Timestamp: ts, Id: id}, nil
+	return &models.Kudos{Sender: senderLower, Receiver: receiverLower, Content: content, Timestamp: ts, Id: id}, nil
 }
 
-func GetAllKudos() []models.Kudos {
+func GetAllKudos() []*models.Kudos {
 	rows, err := db.Query("SELECT * FROM kudos")
 
 	utils.HandleWarning(err)
 	defer rows.Close()
 
-	var kudos []models.Kudos
+	var kudos []*models.Kudos
 
 	for rows.Next() {
 
@@ -48,7 +48,7 @@ func GetAllKudos() []models.Kudos {
 		var content string
 		utils.HandleWarning(rows.Scan(&id, &sender, &receiver, &createdAt, &content))
 
-		kudos = append(kudos, models.Kudos{
+		kudos = append(kudos, &models.Kudos{
 			Sender:    sender,
 			Receiver:  receiver,
 			Id:        id,
@@ -59,12 +59,12 @@ func GetAllKudos() []models.Kudos {
 	return kudos
 }
 
-func GetKudosPerUser(user string) ([]models.Kudos, error) {
+func GetKudosPerReceiver(user string) ([]*models.Kudos, error) {
 	rows, err := db.Query("SELECT * FROM kudos WHERE receiver = $1", user)
 	defer rows.Close()
 	utils.HandleWarning(err)
 
-	var kudos []models.Kudos
+	var kudos []*models.Kudos
 
 	for rows.Next() {
 
@@ -75,7 +75,38 @@ func GetKudosPerUser(user string) ([]models.Kudos, error) {
 		var content string
 		utils.HandleWarning(rows.Scan(&id, &sender, &receiver, &createdAt, &content))
 
-		kudos = append(kudos, models.Kudos{
+		kudos = append(kudos, &models.Kudos{
+			Sender:    sender,
+			Receiver:  receiver,
+			Id:        id,
+			Content:   content,
+			Timestamp: createdAt,
+		})
+	}
+
+	if len(kudos) == 0 {
+		return nil, errors.New("No kudos found")
+	}
+	return kudos, nil
+}
+
+func GetKudosPerSender(user string) ([]*models.Kudos, error) {
+	rows, err := db.Query("SELECT * FROM kudos WHERE sender = $1", user)
+	defer rows.Close()
+	utils.HandleWarning(err)
+
+	var kudos []*models.Kudos
+
+	for rows.Next() {
+
+		var sender string
+		var receiver string
+		var id int
+		var createdAt int64
+		var content string
+		utils.HandleWarning(rows.Scan(&id, &sender, &receiver, &createdAt, &content))
+
+		kudos = append(kudos, &models.Kudos{
 			Sender:    sender,
 			Receiver:  receiver,
 			Id:        id,

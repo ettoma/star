@@ -9,7 +9,6 @@ import (
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
-	"github.com/gorilla/mux"
 )
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
@@ -18,9 +17,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 
-	json_data, err := json.Marshal(users)
-	utils.HandleWarning(err)
-	w.Write(json_data)
+	utils.WriteJsonResponse(users, w)
 }
 
 func AddUser(w http.ResponseWriter, r *http.Request) {
@@ -35,20 +32,26 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 
 	createdUser, err := database.AddUser(newUser.Name, newUser.Username)
 	if err != nil {
-		w.WriteHeader(http.StatusConflict)
-		response := models.DefaultResponse{
-			Message: err.Error(),
-			Status:  http.StatusConflict,
-			Success: false,
+		if err.Error() == "name or username too short (min. 4 char)" {
+			w.WriteHeader(http.StatusBadRequest)
+			response := models.DefaultResponse{
+				Message: err.Error(),
+				Status:  http.StatusBadRequest,
+				Success: false,
+			}
+			utils.WriteJsonResponse(response, w)
+		} else {
+			w.WriteHeader(http.StatusConflict)
+			response := models.DefaultResponse{
+				Message: err.Error(),
+				Status:  http.StatusConflict,
+				Success: false,
+			}
+			utils.WriteJsonResponse(response, w)
 		}
-		responseJson, err := json.Marshal(response)
-		utils.HandleWarning(err)
-		w.Write(responseJson)
 	} else {
 		w.WriteHeader(http.StatusCreated)
-		data, err := json.Marshal(createdUser)
-		utils.HandleWarning(err)
-		w.Write(data)
+		utils.WriteJsonResponse(createdUser, w)
 
 	}
 
@@ -57,15 +60,17 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	id := mux.Vars(r)
+	var id map[string]int
 
-	idInt, err := strconv.Atoi(id["id"])
-	utils.HandleWarning(err)
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 
-	user, err := database.GetUserById(idInt)
+	err := json.NewDecoder(r.Body).Decode(&id)
+	utils.HandleFatal(err)
+
+	user, err := database.GetUserById(id["id"])
 
 	if err != nil {
-		utils.HandleUserNotFound(w)
+		utils.HandleUserNotFound(w, fmt.Sprintf("User with id %d", id["id"]))
 	} else {
 		w.WriteHeader(http.StatusOK)
 		responseUser := models.User{
@@ -74,9 +79,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 			Id:        user.Id,
 			CreatedAt: user.CreatedAt,
 		}
-		userJson, err := json.Marshal(responseUser)
-		utils.HandleWarning(err)
-		w.Write(userJson)
+		utils.WriteJsonResponse(responseUser, w)
 	}
 }
 
@@ -99,11 +102,9 @@ func DeleteUserById(w http.ResponseWriter, r *http.Request) {
 			Status:  http.StatusOK,
 			Success: success,
 		}
-		responseJson, err := json.Marshal(response)
-		utils.HandleWarning(err)
-		w.Write(responseJson)
+		utils.WriteJsonResponse(response, w)
 	} else {
-		utils.HandleUserNotFound(w)
+		utils.HandleUserNotFound(w, fmt.Sprintf("User with id %d", id["id"]))
 	}
 
 }
@@ -127,11 +128,9 @@ func DeleteUserByUsername(w http.ResponseWriter, r *http.Request) {
 			Status:  http.StatusOK,
 			Success: success,
 		}
-		responseJson, err := json.Marshal(response)
-		utils.HandleWarning(err)
-		w.Write(responseJson)
+		utils.WriteJsonResponse(response, w)
 	} else {
-		utils.HandleUserNotFound(w)
+		utils.HandleUserNotFound(w, fmt.Sprintf("User with username %s", username["username"]))
 	}
 }
 
@@ -166,9 +165,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 				Status:  http.StatusBadRequest,
 				Success: success,
 			}
-			responseJson, err := json.Marshal(response)
-			utils.HandleWarning(err)
-			w.Write(responseJson)
+			utils.WriteJsonResponse(response, w)
 			break
 		}
 	}
@@ -183,9 +180,7 @@ func handleSuccess(success bool, w http.ResponseWriter) {
 			Status:  http.StatusOK,
 			Success: success,
 		}
-		responseJson, err := json.Marshal(response)
-		utils.HandleWarning(err)
-		w.Write(responseJson)
+		utils.WriteJsonResponse(response, w)
 	} else {
 		w.WriteHeader(http.StatusNotFound)
 		response := models.DefaultResponse{
@@ -193,8 +188,6 @@ func handleSuccess(success bool, w http.ResponseWriter) {
 			Status:  http.StatusNotFound,
 			Success: success,
 		}
-		responseJson, err := json.Marshal(response)
-		utils.HandleWarning(err)
-		w.Write(responseJson)
+		utils.WriteJsonResponse(response, w)
 	}
 }
