@@ -164,6 +164,21 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// func PatchUser(w http.ResponseWriter, r *http.Request) {
+// 	var req map[string]interface{}
+
+// 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+
+// 	err := json.NewDecoder(r.Body).Decode(&req)
+// 	utils.HandleWarning(err)
+
+// 	var success bool
+
+// 	if req["id"] > 0 {
+
+// 	}
+// }
+
 func handleSuccess(success bool, w http.ResponseWriter) {
 	if success {
 		w.WriteHeader(http.StatusOK)

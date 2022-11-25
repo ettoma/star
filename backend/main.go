@@ -16,6 +16,7 @@ const PORT = ":8000"
 
 func main() {
 	database.OpenDb()
+	go database.KeepAlive()
 
 	r := mux.NewRouter()
 	srv := &http.Server{
@@ -26,10 +27,12 @@ func main() {
 	}
 
 	r.HandleFunc("/", handles.Home).Methods("GET")
+
 	r.HandleFunc("/users", handles.GetAllUsers).Methods("GET")
 	r.HandleFunc("/users/user", handles.GetUserById).Methods("GET")
 	r.HandleFunc("/users", handles.AddUser).Methods("POST")
 	r.HandleFunc("/users", handles.DeleteUser).Methods("DELETE")
+	// r.HandleFunc("/users", handles.PatchUser).Methods("PATCH")
 	//TODO: implement Patch user handle
 
 	r.HandleFunc("/kudos", handles.GetAllKudos).Methods("GET")
