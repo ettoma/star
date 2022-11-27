@@ -57,13 +57,15 @@ func GetAllUsers() []*models.User {
 		var username string
 		var id int
 		var createdAt int64
-		utils.HandleWarning(rows.Scan(&name, &username, &id, &createdAt))
+		var password string
+		utils.HandleWarning(rows.Scan(&name, &username, &id, &createdAt, &password))
 
 		users = append(users, &models.User{
 			Name:      name,
 			Username:  username,
 			Id:        id,
 			CreatedAt: time.Unix(createdAt, 0),
+			Password:  password,
 		})
 	}
 	return users
@@ -78,8 +80,9 @@ func GetUserById(u int) (*models.User, error) {
 	var username string
 	var id int
 	var createdAt int64
+	var password string
 
-	err := rows.Scan(&name, &username, &id, &createdAt)
+	err := rows.Scan(&name, &username, &id, &createdAt, &password)
 
 	if err != nil {
 		return nil, err
@@ -97,8 +100,9 @@ func GetUserByUsername(u string) (*models.User, error) {
 	var username string
 	var id int
 	var createdAt int64
+	var password string
 
-	err := rows.Scan(&name, &username, &id, &createdAt)
+	err := rows.Scan(&name, &username, &id, &createdAt, &password)
 
 	if err != nil {
 		return nil, err

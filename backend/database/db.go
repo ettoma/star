@@ -13,19 +13,20 @@ import (
 var db *sql.DB
 var err error
 
-func OpenDb() {
+func DbInit() {
+	openDb()
+	go keepAlive()
+}
+
+func openDb() {
 	connStr := os.Getenv("DBURL")
 	db, err = sql.Open("postgres", connStr)
 	utils.HandleFatal(err)
 }
 
-func ping() error {
-	return db.Ping()
-}
-
-func KeepAlive() {
+func keepAlive() {
 	for {
-		err := ping()
+		err := db.Ping()
 		if err != nil {
 			log.Fatalln(err)
 		} else {
