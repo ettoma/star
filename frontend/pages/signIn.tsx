@@ -1,5 +1,7 @@
 import "react"
 import React, { useState } from "react"
+import { Route, Router } from "react-router"
+import { Link } from "react-router-dom"
 import "./styles/signIn.css"
 
 function SignIn() {
@@ -22,7 +24,9 @@ function SignIn() {
 
           <button type="submit">Sign in</button>
 
-          <button>--- register ---</button>
+          <Link to={"/register"}>
+            <button>--- register ---</button>
+          </Link>
         </form>
       </section>
     </main>

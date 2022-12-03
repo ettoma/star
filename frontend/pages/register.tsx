@@ -1,5 +1,7 @@
 import "react"
 import React, { useState } from "react"
+import handleRegister from "../api/handleRegister"
+import RequestError from "../api/models/errors"
 import "./styles/signIn.css"
 
 function Register() {
@@ -7,9 +9,15 @@ function Register() {
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
 
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
-        console.log(name, username, password)
+        const response = await handleRegister({ "name": name, "username": username, "password": password })
+        const data = await response.json()
+
+        if ((response.status) != 201) {
+            console.log("error creating user")
+            console.log(data as RequestError)
+        }
     }
 
     return (

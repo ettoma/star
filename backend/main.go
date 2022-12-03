@@ -24,12 +24,13 @@ func main() {
 		WriteTimeout: time.Second * 15,
 	}
 
+	r.Use(utils.Cors)
 	r.Use(utils.LoggingMiddleware)
 	r.Use(utils.ContentTypeMiddleware)
 
 	r.HandleFunc("/", handles.Home).Methods("GET")
 
-	r.HandleFunc("/users", handles.GetAllUsers).Methods("GET")
+	r.HandleFunc("/users", handles.GetAllUsers).Methods("GET", "OPTIONS")
 	r.HandleFunc("/users/user", handles.GetUserById).Methods("GET")
 	r.HandleFunc("/users", handles.AddUser).Methods("POST")
 	r.HandleFunc("/users", handles.DeleteUser).Methods("DELETE")
