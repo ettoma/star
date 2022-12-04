@@ -1,6 +1,6 @@
 import "react"
 import React, { useState } from "react"
-import handleRegister from "../api/handleRegister"
+import { handleRegister } from "../api/users/handleUsers"
 import RequestError from "../api/models/errors"
 import "./styles/signIn.css"
 

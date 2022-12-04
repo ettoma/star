@@ -33,7 +33,7 @@ func main() {
 	r.HandleFunc("/users", handles.GetAllUsers).Methods("GET", "OPTIONS")
 	r.HandleFunc("/users/user", handles.GetUserById).Methods("GET")
 	r.HandleFunc("/users", handles.AddUser).Methods("POST")
-	r.HandleFunc("/users", handles.DeleteUser).Methods("DELETE")
+	r.HandleFunc("/users", handles.DeleteUser).Methods("DELETE", "OPTIONS")
 	//TODO: implement Patch user handle
 	// r.HandleFunc("/users", handles.PatchUser).Methods("PATCH")
 
