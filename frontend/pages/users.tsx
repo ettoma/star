@@ -1,15 +1,21 @@
-import React, { useState } from "react"
+import { useEffect, useState } from "react"
 import User from "../api/models/user"
 import { handleGetUsers, handleDeleteUser } from "../api/users/handleUsers"
 import UserCard from "../components/users/userCard"
+import "./styles/users.css"
 
 
 function Users() {
 
     const [users, setUsers] = useState([])
 
+    useEffect(() => {
+        getUsers()
+    }, [])
+
+
     async function getUsers() {
-        const response = await (await handleGetUsers()).json()
+        const response = await (handleGetUsers()).then((response) => response.json())
 
         setUsers(response)
     }
@@ -23,27 +29,28 @@ function Users() {
     }
 
     return (
-
-        <>
+        <div>
             <h2>Users</h2>
             <button onClick={() => getUsers()}>Get users</button>
 
-            <ul>
-                {(users as User[]).map((user) =>
-                    <div>
-                        <UserCard
-                            name={user.name}
-                            username={user.username}
-                            password={user.password}
-                            createdAt={user.createdAt}
-                            id={user.id}
-                            key={user.id}
-                        />
-                        <button onClick={() => deleteUser(user.id)}>delete</button>
-                    </div>
-                )}
-            </ul>
-        </>
+            <div>
+                {!users ? <h2>no users</h2> :
+                    (users as User[]).map((user) =>
+                        <div className="user-card">
+
+                            <UserCard
+                                name={user.name}
+                                username={user.username}
+                                password={user.password}
+                                createdAt={user.createdAt}
+                                id={user.id}
+
+                            />
+                            <button onClick={() => deleteUser(user.id)}>X delete</button>
+                        </div>
+                    )}
+            </div>
+        </div>
     )
 }
 

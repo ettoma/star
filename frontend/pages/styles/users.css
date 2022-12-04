@@ -1,0 +1,10 @@
+.user-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.user-card>button {
+    width: 50px;
+    background: transparent;
+}

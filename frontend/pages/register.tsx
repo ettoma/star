@@ -3,11 +3,14 @@ import React, { useState } from "react"
 import { handleRegister } from "../api/users/handleUsers"
 import RequestError from "../api/models/errors"
 import "./styles/signIn.css"
+import { useNavigate } from "react-router-dom"
 
 function Register() {
     const [name, setName] = useState("")
     const [username, setUsername] = useState("")
     const [password, setPassword] = useState("")
+
+    const navigate = useNavigate()
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
@@ -17,6 +20,10 @@ function Register() {
         if ((response.status) != 201) {
             console.log("error creating user")
             console.log(data as RequestError)
+        }
+
+        if ((response.status) == 201) {
+            navigate("/users")
         }
     }
 
