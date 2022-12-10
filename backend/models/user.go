@@ -7,5 +7,11 @@ type User struct {
 	Username  string    `json:"username"`
 	Id        int       `json:"id"`
 	CreatedAt time.Time `json:"createdAt"`
-	Password  string    `json:"password"`
+}
+
+type NewUser struct {
+	Id       int    `json:"id"`
+	Name     string `json:"name"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }

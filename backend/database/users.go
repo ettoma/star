@@ -9,7 +9,7 @@ import (
 	"github.com/ettoma/star/utils"
 )
 
-func AddUser(name, username string) (*models.User, error) {
+func AddUser(name, username, hash string) (*models.User, error) {
 
 	if len(name) <= 3 || len(username) <= 3 {
 		return nil, errors.New("name or username too short (min. 4 char)")
@@ -35,8 +35,9 @@ func AddUser(name, username string) (*models.User, error) {
 	ts := time.Now().Unix()
 
 	_, err = db.Exec(`INSERT INTO users VALUES ($1,$2,$3,$4)`, name, username, id, ts)
-
 	utils.HandleWarning(err)
+
+	_, err = db.Exec(`INSERT INTO auth VALUES ($1,$2,$3)`, username, id, hash)
 
 	return &models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(ts, 0)}, nil
 
@@ -57,15 +58,13 @@ func GetAllUsers() []*models.User {
 		var username string
 		var id int
 		var createdAt int64
-		var password string
-		utils.HandleWarning(rows.Scan(&name, &username, &id, &createdAt, &password))
+		utils.HandleWarning(rows.Scan(&name, &username, &id, &createdAt))
 
 		users = append(users, &models.User{
 			Name:      name,
 			Username:  username,
 			Id:        id,
 			CreatedAt: time.Unix(createdAt, 0),
-			Password:  password,
 		})
 	}
 	return users
@@ -80,9 +79,8 @@ func GetUserById(u int) (*models.User, error) {
 	var username string
 	var id int
 	var createdAt int64
-	var password string
 
-	err := rows.Scan(&name, &username, &id, &createdAt, &password)
+	err := rows.Scan(&name, &username, &id, &createdAt)
 
 	if err != nil {
 		return nil, err
@@ -100,9 +98,8 @@ func GetUserByUsername(u string) (*models.User, error) {
 	var username string
 	var id int
 	var createdAt int64
-	var password string
 
-	err := rows.Scan(&name, &username, &id, &createdAt, &password)
+	err := rows.Scan(&name, &username, &id, &createdAt)
 
 	if err != nil {
 		return nil, err

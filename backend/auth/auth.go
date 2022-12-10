@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"time"
@@ -8,14 +9,14 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-func GenerateJWT() (string, error) {
+func GenerateTokenString(username string) (string, error) {
 
 	key := []byte(os.Getenv("SECRET_KEY"))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp":        jwt.NewNumericDate(time.Now()),
+		"exp":        jwt.NewNumericDate(time.Now().Add(time.Minute * 10)),
 		"authorized": true,
-		"user":       "username",
+		"user":       username,
 	})
 
 	tokenString, err := token.SignedString(key)
@@ -38,7 +39,15 @@ func ValidateToken(tokenString string) (bool, error) {
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		fmt.Println(claims["authorized"], claims["user"], claims["exp"])
+		var date time.Time
+		switch exp := claims["exp"].(type) {
+		case float64:
+			date = time.Unix(int64(exp), 0)
+		case json.Number:
+			v, _ := exp.Int64()
+			date = time.Unix(v, 0)
+		}
+		fmt.Printf(" username: %s \n authorised: %v \n expiresAt: %s \n", claims["user"], claims["authorized"], date)
 		return true, nil
 	} else {
 		return false, err

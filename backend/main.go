@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/ettoma/star/auth"
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/handles"
 	"github.com/ettoma/star/utils"
@@ -41,6 +42,12 @@ func main() {
 	r.HandleFunc("/kudos", handles.AddKudos).Methods("POST")
 	r.HandleFunc("/kudos/users", handles.GetKudosPerUser).Methods("GET")
 	r.HandleFunc("/kudos", handles.DeleteKudos).Methods("DELETE")
+
+	r.HandleFunc("/auth-issuer", auth.GenerateJWT).Methods("POST")
+	r.HandleFunc("/auth", auth.ValidateJWT).Methods("POST")
+
+	r.HandleFunc("/register", handles.RegisterUser).Methods("POST")
+	r.HandleFunc("/login", handles.Login).Methods("POST")
 
 	utils.HandleFatal(srv.ListenAndServe())
 

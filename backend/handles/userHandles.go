@@ -27,7 +27,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	utils.HandleWarning(err)
 
-	createdUser, err := database.AddUser(newUser.Name, newUser.Username)
+	createdUser, err := database.AddUser(newUser.Name, newUser.Username, "")
 	if err != nil {
 		if err.Error() == "name or username too short (min. 4 char)" {
 			w.WriteHeader(http.StatusBadRequest)
