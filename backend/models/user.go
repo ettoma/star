@@ -11,7 +11,12 @@ type User struct {
 
 type NewUser struct {
 	Id       int    `json:"id"`
-	Name     string `json:"name"`
+	Name     string `json:"name,omitempty"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password"`
+}
+
+type Login struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }

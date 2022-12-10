@@ -9,7 +9,7 @@ import (
 	"github.com/ettoma/star/utils"
 )
 
-func AddUser(name, username, hash string) (*models.User, error) {
+func AddUser(name, username string) (*models.User, error) {
 
 	if len(name) <= 3 || len(username) <= 3 {
 		return nil, errors.New("name or username too short (min. 4 char)")
@@ -37,10 +37,24 @@ func AddUser(name, username, hash string) (*models.User, error) {
 	_, err = db.Exec(`INSERT INTO users VALUES ($1,$2,$3,$4)`, name, username, id, ts)
 	utils.HandleWarning(err)
 
-	_, err = db.Exec(`INSERT INTO auth VALUES ($1,$2,$3)`, username, id, hash)
-
 	return &models.User{Name: name, Username: username, Id: id, CreatedAt: time.Unix(ts, 0)}, nil
 
+}
+
+func AddUserToAuth(hash string) error {
+
+	var users = GetAllUsers()
+	var id int
+
+	if len(users) > 0 {
+		id = users[len(users)-1].Id
+	} else {
+		id = 1
+	}
+	_, err = db.Exec(`INSERT INTO auth VALUES ($1,$2)`, id, hash)
+	utils.HandleWarning(err)
+
+	return nil
 }
 
 func GetAllUsers() []*models.User {
@@ -136,4 +150,18 @@ func DeleteUserByUsername(username string) (bool, error) {
 	}
 	return false, errors.New("user not found")
 
+}
+
+func GetHashForUser(username string) (string, error) {
+	rows := db.QueryRow("SELECT hash FROM auth JOIN users ON users.id = auth.id WHERE users.username = $1", username)
+	utils.HandleWarning(err)
+
+	var hash string
+
+	err := rows.Scan(&hash)
+	if err != nil {
+		return "", errors.New("username not found")
+	} else {
+		return hash, nil
+	}
 }

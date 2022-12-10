@@ -18,42 +18,6 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJsonResponse(users, w)
 }
 
-func AddUser(w http.ResponseWriter, r *http.Request) {
-
-	var newUser models.User
-
-	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
-
-	err := json.NewDecoder(r.Body).Decode(&newUser)
-	utils.HandleWarning(err)
-
-	createdUser, err := database.AddUser(newUser.Name, newUser.Username, "")
-	if err != nil {
-		if err.Error() == "name or username too short (min. 4 char)" {
-			w.WriteHeader(http.StatusBadRequest)
-			response := models.DefaultResponse{
-				Message: err.Error(),
-				Status:  http.StatusBadRequest,
-				Success: false,
-			}
-			utils.WriteJsonResponse(response, w)
-		} else {
-			w.WriteHeader(http.StatusConflict)
-			response := models.DefaultResponse{
-				Message: err.Error(),
-				Status:  http.StatusConflict,
-				Success: false,
-			}
-			utils.WriteJsonResponse(response, w)
-		}
-	} else {
-		w.WriteHeader(http.StatusCreated)
-		utils.WriteJsonResponse(createdUser, w)
-
-	}
-
-}
-
 func GetUserById(w http.ResponseWriter, r *http.Request) {
 
 	var id map[string]int
