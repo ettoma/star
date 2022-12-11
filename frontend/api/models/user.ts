@@ -1,9 +1,17 @@
-type User = {
+export type User = {
     name: string,
     username: string,
-    password: string,
     createdAt: string,
     id: number,
 }
 
-export default User
+export type RegisterPayload = {
+    name: string,
+    username: string,
+    password: string,
+}
+
+export type LoginPayload = {
+    username: string,
+    password: string,
+}

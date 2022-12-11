@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import User from "../api/models/user"
+import { User } from "../api/models/user"
 import { handleGetUsers, handleDeleteUser } from "../api/users/handleUsers"
 import UserCard from "../components/users/userCard"
 import "./styles/users.css"
@@ -41,7 +41,6 @@ function Users() {
                             <UserCard
                                 name={user.name}
                                 username={user.username}
-                                password={user.password}
                                 createdAt={user.createdAt}
                                 id={user.id}
 

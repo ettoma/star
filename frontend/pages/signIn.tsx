@@ -1,17 +1,32 @@
 import "react"
 import React, { useState } from "react"
-import { Route, Router } from "react-router"
+import { Route, Router, useNavigate } from "react-router"
 import { Link } from "react-router-dom"
+import RequestError from "../api/models/errors"
+import { handleLogin } from "../api/users/handleUsers"
 import "./styles/signIn.css"
 
 function SignIn() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const navigate = useNavigate()
 
-  function handleSubmit(e: React.FormEvent) {
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    console.log(username, password)
+    const response = await handleLogin({ "username": username, "password": password })
+    const data = await response.json()
+
+    if ((response.status) != 200) {
+      console.log("error creating user")
+      console.log(data as RequestError)
+    }
+
+    if ((response.status) == 200) {
+      navigate("/users")
+    }
   }
+
 
   return (
     <main>

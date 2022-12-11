@@ -69,7 +69,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	} else {
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(loginDetails.Password))
 		if err != nil {
-			w.WriteHeader(http.StatusOK)
+			w.WriteHeader(http.StatusBadRequest)
 			response := models.DefaultResponse{
 				Message: "Incorrect password",
 				Status:  http.StatusBadRequest,
