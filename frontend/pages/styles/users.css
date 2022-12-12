@@ -1,3 +1,13 @@
+/* .container {
+    display: flex;
+    /* flex-direction: column; */
+
+
+.container__cards {
+    display: flex;
+    flex-wrap: wrap;
+}
+
 .user-card {
     display: flex;
     justify-content: center;
@@ -7,4 +17,8 @@
 .user-card>button {
     width: 50px;
     background: transparent;
+}
+
+#get_user {
+    width: auto
 }

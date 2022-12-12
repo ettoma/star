@@ -1,7 +1,7 @@
 import "react"
 import React, { useState } from "react"
 import { handleRegister } from "../api/users/handleUsers"
-import RequestError from "../api/models/errors"
+import RequestData from "../api/models/errors"
 import "./styles/signIn.css"
 import { useNavigate } from "react-router-dom"
 
@@ -16,11 +16,12 @@ function Register() {
         e.preventDefault()
         const response = await handleRegister({ "name": name, "username": username, "password": password })
         const data = await response.json()
+        console.log((data as RequestData).status)
 
-        if ((response.status) != 201) {
-            console.log("error creating user")
-            console.log(data as RequestError)
-        }
+        // if ((response.status) != 201) {
+        //     console.log("error creating user")
+        //     console.log(data as RequestData)
+        // }
 
         if ((response.status) == 201) {
             navigate("/users")
@@ -32,7 +33,7 @@ function Register() {
             <section className="card">
                 <h3>New User</h3>
                 <p>Create a new user</p>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit} method="POST">
                     <input type="text" name="name" placeholder="Enter your full name" onChange={e => setName(e.target.value)} />
                     <input type="text" name="username" placeholder="Enter username" onChange={e => setUsername(e.target.value)} />
                     <input type="password" name="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />

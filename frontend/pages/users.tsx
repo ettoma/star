@@ -29,14 +29,16 @@ function Users() {
     }
 
     return (
-        <div>
-            <h2>Users</h2>
-            <button onClick={() => getUsers()}>Get users</button>
+        <div className="container" >
 
-            <div>
+
+            <h2>Users</h2>
+            <button id="get_user" onClick={() => getUsers()}>Get users</button>
+
+            <div className="container__cards">
                 {!users ? <h2>no users</h2> :
                     (users as User[]).map((user) =>
-                        <div className="user-card">
+                        <div className="user-card" key={user.id}>
 
                             <UserCard
                                 name={user.name}

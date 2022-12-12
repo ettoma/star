@@ -1,7 +1,7 @@
-type RequestError = {
+type RequestData = {
     success: boolean,
     message: string,
     status: number
 }
 
-export default RequestError
+export default RequestData
