@@ -32,7 +32,7 @@ function SignIn() {
       <div className="card">
         <div className="card_title">
           <h1>Login</h1>
-          <p className="card_subtitle">Enter your login details to get sign in to your account</p>
+          <p className="card_subtitle">Sign in to your account</p>
         </div>
         <form className="form" onSubmit={handleSubmit} method="POST">
           <label>Username</label>

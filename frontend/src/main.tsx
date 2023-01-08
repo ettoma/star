@@ -6,13 +6,18 @@ import SignIn from '../pages/signIn'
 import Register from '../pages/register'
 import Users from '../pages/users'
 import './index.css'
+import Home from '../pages/home'
 
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <SignIn />,
+    path:"/",
+    element: <Home />,
     errorElement: <h2>Page not found</h2>
+  },
+  {
+    path: "/signin",
+    element: <SignIn />,
   },
   {
     path: "/register",
