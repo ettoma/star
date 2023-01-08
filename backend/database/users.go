@@ -2,6 +2,7 @@ package database
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 
@@ -163,5 +164,20 @@ func GetHashForUser(username string) (string, error) {
 		return "", errors.New("username not found")
 	} else {
 		return hash, nil
+	}
+}
+
+func GetHash() {
+	rows := db.QueryRow("SELECT * FROM auth")
+	utils.HandleWarning(err)
+
+	var hash string
+	var id string
+
+	err := rows.Scan(&hash, &id)
+	if err != nil {
+		fmt.Print(err)
+	} else {
+		fmt.Print(hash, id)
 	}
 }

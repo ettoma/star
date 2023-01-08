@@ -31,8 +31,11 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 	utils.HandleWarning(err)
 	res, err := ValidateToken(token["token"])
 	if err != nil {
-		fmt.Println(err)
+		w.WriteHeader(http.StatusUnauthorized)
+		utils.WriteJsonResponse(err.Error(), w)
+	} else {
+		w.WriteHeader(http.StatusAccepted)
+		utils.WriteJsonResponse(res, w)
 	}
-	utils.WriteJsonResponse(res, w)
 
 }
