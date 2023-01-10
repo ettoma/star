@@ -14,4 +14,5 @@ export type RegisterPayload = {
 export type LoginPayload = {
     username: string,
     password: string,
+    token: string
 }

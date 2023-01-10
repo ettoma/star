@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/ettoma/star/auth"
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
@@ -77,12 +78,21 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			}
 			utils.WriteJsonResponse(response, w)
 		} else {
-			w.WriteHeader(http.StatusOK)
-			response := models.DefaultResponse{
+			response := models.TokenResponse{}
+			res, err := auth.Validate(loginDetails.Token)
+			response = models.TokenResponse{
 				Message: "authentication successful",
 				Status:  http.StatusOK,
 				Success: true,
 			}
+			utils.HandleWarning(err)
+			if res == true {
+				response.Token = loginDetails.Token
+			} else {
+				token, _ := auth.GenerateToken(loginDetails.Username)
+				response.Token = token
+			}
+			w.WriteHeader(http.StatusOK)
 			utils.WriteJsonResponse(response, w)
 		}
 	}

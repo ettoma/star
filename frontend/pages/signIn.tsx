@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { useNavigate } from "react-router"
-import { Link } from "react-router-dom"
-import RequestData from "../api/models/errors"
+import LoginRequestData from "../api/models/errors"
 import { handleLogin } from "../api/users/handleUsers"
 import "./styles/signIn.css"
 
@@ -13,15 +12,19 @@ function SignIn() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const response = await handleLogin({ "username": username, "password": password })
-    var data = await response.json() as RequestData
+    const token = document.cookie.split("=")[1]
+    const response = await handleLogin({ "username": username, "password": password, "token": token })
+    var data = await response.json() as LoginRequestData
 
     if (data.success != true) {
       console.log("error creating user")
       console.log(data.message)
     }
 
+    //!!! fix the empty response from api
     if (data.success) {
+      document.cookie = "token=" + data.token + "; secure; sameSite=Lax;"
+      console.log(data.token)
       navigate("/users")
     }
   }

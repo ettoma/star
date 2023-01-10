@@ -19,7 +19,8 @@ export async function handleLogin(payload: LoginPayload) {
         method: "POST",
         body: JSON.stringify({
             username: payload.username,
-            password: payload.password
+            password: payload.password,
+            token: payload.token
         })
     })
 

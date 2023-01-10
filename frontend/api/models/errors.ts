@@ -1,7 +1,8 @@
-type RequestData = {
+type LoginRequestData = {
     success: boolean,
     message: string,
-    status: number
+    status: number,
+    token: string,
 }
 
-export default RequestData
+export default LoginRequestData
