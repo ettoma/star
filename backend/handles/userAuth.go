@@ -78,20 +78,27 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			}
 			utils.WriteJsonResponse(response, w)
 		} else {
-			response := models.TokenResponse{}
-			res, err := auth.Validate(loginDetails.Token)
-			response = models.TokenResponse{
+			response := models.TokenResponse{
 				Message: "authentication successful",
 				Status:  http.StatusOK,
 				Success: true,
 			}
-			utils.HandleWarning(err)
-			if res == true {
-				response.Token = loginDetails.Token
-			} else {
+			// the password is correct but no token was passed in the payload
+
+			if loginDetails.Token == "" {
 				token, _ := auth.GenerateToken(loginDetails.Username)
 				response.Token = token
+			} else {
+				res, err := auth.Validate(loginDetails.Token)
+				utils.HandleWarning(err)
+				if res == true {
+					response.Token = loginDetails.Token
+				} else {
+					token, _ := auth.GenerateToken(loginDetails.Username)
+					response.Token = token
+				}
 			}
+
 			w.WriteHeader(http.StatusOK)
 			utils.WriteJsonResponse(response, w)
 		}

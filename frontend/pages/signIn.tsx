@@ -21,9 +21,9 @@ function SignIn() {
       console.log(data.message)
     }
 
-    //!!! fix the empty response from api
+    //!!! fix the HttpOnly logic
     if (data.success) {
-      document.cookie = "token=" + data.token + "; secure; sameSite=Lax;"
+      document.cookie = "token=" + data.token + "; HttpOnly; secure; sameSite=Lax;"
       console.log(data.token)
       navigate("/users")
     }

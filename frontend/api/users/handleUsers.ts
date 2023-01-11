@@ -16,6 +16,7 @@ export async function handleRegister(payload: RegisterPayload) {
 
 export async function handleLogin(payload: LoginPayload) {
     const res = await fetch("http://127.0.0.1:8000/login", {
+        credentials: "same-origin",
         method: "POST",
         body: JSON.stringify({
             username: payload.username,
