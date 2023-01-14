@@ -2,7 +2,8 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router"
 import LoginRequestData from "../api/models/errors"
 import { handleLogin } from "../api/users/handleUsers"
-import "./styles/signIn.css"
+import { Anchor, PageHeader } from "grommet"
+// import "./styles/signIn.css"
 
 function SignIn() {
   const [username, setUsername] = useState("")
@@ -33,10 +34,9 @@ function SignIn() {
   return (
     <main>
       <div className="card">
-        <div className="card_title">
-          <h1>Login</h1>
-          <p className="card_subtitle">Sign in to your account</p>
-        </div>
+        <PageHeader title="Login" parent={<Anchor label="home" onClick={() => navigate('/')} />} />
+
+
         <form className="form" onSubmit={handleSubmit} method="POST">
           <label>Username</label>
           <input type="text" name="username" placeholder="Enter username" onChange={e => setUsername(e.target.value)} />
