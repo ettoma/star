@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { User } from "../api/models/user"
 import { handleGetUsers, handleDeleteUser } from "../api/users/handleUsers"
 import UserCard from "../components/users/userCard"
-import "./styles/users.css"
+import { Button } from "grommet"
 
 
 function Users() {
@@ -47,7 +47,9 @@ function Users() {
                                 id={user.id}
 
                             />
-                            <button onClick={() => deleteUser(user.id)}>X delete</button>
+                            <Button label="Delete" color={{
+                                dark: "red"
+                            }} onClick={() => deleteUser(user.id)} />
                         </div>
                     )}
             </div>

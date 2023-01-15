@@ -2,6 +2,7 @@ package handles
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/ettoma/star/auth"
@@ -68,11 +69,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.HandleNotFound(w, loginDetails.Username)
 	} else {
+		fmt.Println(loginDetails.Password)
+		fmt.Println(hashedPassword)
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(loginDetails.Password))
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			response := models.DefaultResponse{
-				Message: "Incorrect password",
+				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 				Success: false,
 			}

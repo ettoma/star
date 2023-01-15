@@ -129,7 +129,10 @@ func DeleteUserById(id int) (bool, error) {
 	res, _ := db.Exec(`DELETE FROM users WHERE id = $1`, id)
 	deletedRows, _ := res.RowsAffected()
 
-	if deletedRows == 0 {
+	res1, _ := db.Exec(`DELETE FROM auth WHERE id = $1`, id)
+	deletedRows1, _ := res1.RowsAffected()
+
+	if deletedRows == 0 || deletedRows1 == 0 {
 
 		return false, errors.New("user not found")
 	} else {
@@ -138,6 +141,7 @@ func DeleteUserById(id int) (bool, error) {
 
 }
 
+// ! DO NOT USE before fixing Auth delete
 func DeleteUserByUsername(username string) (bool, error) {
 
 	users := GetAllUsers()

@@ -2,8 +2,8 @@ import "react"
 import React, { useState } from "react"
 import { handleRegister } from "../api/users/handleUsers"
 import RequestData from "../api/models/errors"
-// import "./styles/signIn.css"
 import { useNavigate } from "react-router-dom"
+import { Box, Button, Form, FormField, PageHeader, TextInput } from "grommet"
 
 function Register() {
     const [name, setName] = useState("")
@@ -28,28 +28,31 @@ function Register() {
         }
     }
 
+    const messages = {
+        invalid: "invalid",
+        required: "required"
+    }
+
     return (
-        <main>
-            <div className="card">
-                <div className="card_title">
-                    <h1>New User</h1>
-                    <p className="card_subtitle">Create a new user</p>
-                </div>
-                <form className="form" onSubmit={handleSubmit} method="POST">
-                    <label>Full name</label>
-                    <input type="text" name="name" placeholder="Enter your full name" onChange={e => setName(e.target.value)} />
-                    <label>Username</label>
-                    <input type="text" name="username" placeholder="Enter username" onChange={e => setUsername(e.target.value)} />
-                    <label>Password</label>
-                    <input type="password" name="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
-                    <div className="button_group">
-
-                        <button id="signin" type="submit">Register</button>
-                    </div>
-
-                </form>
-            </div>
-        </main>
+        <Box justify="center" gap="large" pad="large">
+            <PageHeader title="Register" />
+            <Box align="center">
+                <Form onSubmit={handleSubmit} method="POST" validate="submit" messages={messages}>
+                    <FormField label="Full name" name="fullname" required>
+                        <TextInput type="text" name="fullname" onChange={e => setName(e.target.value)} />
+                    </FormField>
+                    <FormField label="Username" name="username" required>
+                        <TextInput type="text" name="username" onChange={e => setUsername(e.target.value)} />
+                    </FormField>
+                    <FormField label="Password" name="password" required>
+                        <TextInput type="password" name="password" onChange={e => setPassword(e.target.value)} />
+                    </FormField>
+                    <Box margin="large">
+                        <Button type="submit" label="Register" primary />
+                    </Box>
+                </Form>
+            </Box>
+        </Box>
     )
 }
 

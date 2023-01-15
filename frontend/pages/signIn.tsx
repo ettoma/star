@@ -2,8 +2,7 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router"
 import LoginRequestData from "../api/models/errors"
 import { handleLogin } from "../api/users/handleUsers"
-import { Anchor, PageHeader } from "grommet"
-// import "./styles/signIn.css"
+import { Box, Button, Form, FormField, PageHeader, TextInput } from "grommet"
 
 function SignIn() {
   const [username, setUsername] = useState("")
@@ -22,35 +21,36 @@ function SignIn() {
       console.log(data.message)
     }
 
-    //!!! fix the HttpOnly logic
+
     if (data.success) {
-      document.cookie = "token=" + data.token + "; HttpOnly; secure; sameSite=Lax;"
-      console.log(data.token)
+      document.cookie = "token=" + data.token + "; secure; sameSite=Lax;"
       navigate("/users")
     }
   }
 
+  const messages = {
+    invalid: "invalid",
+    required: "required"
+  }
+
 
   return (
-    <main>
-      <div className="card">
-        <PageHeader title="Login" parent={<Anchor label="home" onClick={() => navigate('/')} />} />
-
-
-        <form className="form" onSubmit={handleSubmit} method="POST">
-          <label>Username</label>
-          <input type="text" name="username" placeholder="Enter username" onChange={e => setUsername(e.target.value)} />
-          <label>Password</label>
-          <input type="password" name="password" placeholder="Password" onChange={e => setPassword(e.target.value)} />
-          <div className="button_group">
-            <button type="submit" id="signin">Sign in</button>
-            {/* <Link to={"/register"}>
-              <button>--- register ---</button>
-            </Link> */}
-          </div>
-        </form>
-      </div>
-    </main>
+    <Box justify="center" gap="large" pad="large">
+      <PageHeader title="Login" />
+      <Box align="center">
+        <Form onSubmit={handleSubmit} method="POST" validate="submit" messages={messages}>
+          <FormField label="Username" name="username" >
+            <TextInput type="text" name="username" onChange={e => setUsername(e.target.value)} required />
+          </FormField>
+          <FormField label="Password" name="password" required>
+            <TextInput type="password" name="password" onChange={e => setPassword(e.target.value)} required />
+          </FormField>
+          <Box margin="large">
+            <Button type="submit" primary label="Sign In" />
+          </Box>
+        </Form>
+      </Box>
+    </Box>
   )
 }
 
