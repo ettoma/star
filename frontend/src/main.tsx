@@ -11,6 +11,8 @@ import SendKudos from '../pages/sendKudos'
 import { Grommet } from 'grommet'
 import { theme } from './globals/styles/grommet'
 import Root from './root'
+import { Provider } from 'react-redux'
+import store from './store'
 
 
 
@@ -49,7 +51,9 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <Grommet full theme={theme} background="#212121">
     <React.StrictMode>
-      <RouterProvider router={router} />
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
     </React.StrictMode>
   </Grommet>
 )

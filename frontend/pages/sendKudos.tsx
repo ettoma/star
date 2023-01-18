@@ -1,6 +1,6 @@
 import { Box, Button, Form, FormField, Menu, PageHeader, TextInput } from 'grommet'
 import { handleKudos } from "../api/kudos/handleKudos"
-import React, { FormEvent, useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { handleGetUsers } from '../api/users/handleUsers'
 import { User } from '../api/models/user'
 
@@ -15,17 +15,14 @@ function SendKudos() {
     useEffect(() => {
         getUsers()
         formatUsers()
-
     }, [])
 
     function formatUsers() {
         const newA: {}[] = []
-
         users.map((user: User) => {
             const u = { label: user.username, onClick: () => setRecipient(user.username) }
             newA.push(u)
         })
-
         return newA
     }
 
@@ -34,7 +31,6 @@ function SendKudos() {
             .then((res) => res.json())
             .then((data) => setUsers(data))
     }, [])
-
 
 
 
@@ -65,7 +61,7 @@ function SendKudos() {
                     </FormField>
                     <Box margin="large" direction='row' gap="small">
                         <Button label="Send" primary type="submit" />
-                        <Button label="Clear" type='reset' />
+                        <Button label="Clear" type='reset' onClick={() => setRecipient('')} />
                     </Box>
                     <Button onClick={() => formatUsers()} label="test" />
                 </Form>
