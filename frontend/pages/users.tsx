@@ -3,12 +3,19 @@ import { User } from "../api/models/user"
 import { handleGetUsers, handleDeleteUser } from "../api/users/handleUsers"
 import UserCard from "../components/users/userCard"
 import { Button } from "grommet"
+import { useDispatch, useSelector } from "react-redux"
+import { allUsers, getUsers } from "../reducers/userSlice"
 
 
 function Users() {
+    const dispatch = useDispatch()
 
     const [users, setUsers] = useState([])
+    // const { users } = useSelector((state) => state.allUsers)
 
+    // useEffect(() => {
+    //     dispatch(allUsers)
+    // }, [])
     useEffect(() => {
         getUsers()
     }, [])
@@ -30,22 +37,17 @@ function Users() {
 
     return (
         <div className="container" >
-
-
             <h2>Users</h2>
             <button id="get_user" onClick={() => getUsers()}>Get users</button>
-
             <div className="container__cards">
                 {!users ? <h2>no users</h2> :
                     (users as User[]).map((user) =>
                         <div className="user-card" key={user.id}>
-
                             <UserCard
                                 name={user.name}
                                 username={user.username}
                                 createdAt={user.createdAt}
                                 id={user.id}
-
                             />
                             <Button label="Delete" color={{
                                 dark: "red"
