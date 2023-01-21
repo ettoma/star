@@ -1,16 +1,14 @@
-import { configureStore, createListenerMiddleware } from '@reduxjs/toolkit'
-import userReducer from '../reducers/userSlice'
-
-const fetcher = createListenerMiddleware({})
-
-fetcher.startListening({
-    type: "SET",
-    effect: () => console.log("set")
-})
+import { configureStore } from "@reduxjs/toolkit";
+import userSlice from "../reducers/userSlice";
 
 
-export default configureStore({
+const store = configureStore({
     reducer: {
-        users: userReducer
-    },
+        users: userSlice,
+    }
 })
+
+export default store
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch

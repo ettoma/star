@@ -1,5 +1,5 @@
 {
-  "name": "vite-project",
+  "name": "star",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,11 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@fontsource/public-sans": "^4.5.11",
-    "@mui/icons-material": "^5.10.16",
-    "@mui/joy": "^5.0.0-alpha.57",
-    "@mui/material": "^5.10.17",
     "@reduxjs/toolkit": "^1.9.1",
     "eslint": "^8.30.0",
     "grommet": "^2.29.0",

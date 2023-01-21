@@ -4,18 +4,15 @@ import { handleGetUsers, handleDeleteUser } from "../api/users/handleUsers"
 import UserCard from "../components/users/userCard"
 import { Button } from "grommet"
 import { useDispatch, useSelector } from "react-redux"
-import { allUsers, getUsers } from "../reducers/userSlice"
+import { RootState } from "../src/store"
+import { setUserList } from "../reducers/userSlice"
 
 
 function Users() {
     const dispatch = useDispatch()
 
-    const [users, setUsers] = useState([])
-    // const { users } = useSelector((state) => state.allUsers)
+    const users: User[] = useSelector((state: RootState) => state.users.users)
 
-    // useEffect(() => {
-    //     dispatch(allUsers)
-    // }, [])
     useEffect(() => {
         getUsers()
     }, [])
@@ -23,8 +20,7 @@ function Users() {
 
     async function getUsers() {
         const response = await (handleGetUsers()).then((response) => response.json())
-
-        setUsers(response)
+        dispatch(setUserList(response))
     }
 
     async function deleteUser(id: number) {
@@ -39,6 +35,7 @@ function Users() {
         <div className="container" >
             <h2>Users</h2>
             <button id="get_user" onClick={() => getUsers()}>Get users</button>
+            <button id="get_user" onClick={() => console.log(users)}>Print data</button>
             <div className="container__cards">
                 {!users ? <h2>no users</h2> :
                     (users as User[]).map((user) =>

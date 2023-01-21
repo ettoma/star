@@ -3,17 +3,21 @@ import { handleKudos } from "../api/kudos/handleKudos"
 import React, { useCallback, useEffect, useState } from 'react'
 import { handleGetUsers } from '../api/users/handleUsers'
 import { User } from '../api/models/user'
+import { useSelector } from 'react-redux'
+import { RootState } from '../src/store'
 
 
 
 function SendKudos() {
 
-    const [users, setUsers] = useState([])
+    // const [users, setUsers] = useState([])
+    const [userFormat, setUserFormat] = useState([])
+    const users: User[] = useSelector((state: RootState) => state.users.users)
 
     //TODO: implement Redux to propagate users to the whole app when they are fetched. Avoid fetching on every page
 
     useEffect(() => {
-        getUsers()
+        // getUsers()
         formatUsers()
     }, [])
 
@@ -26,11 +30,11 @@ function SendKudos() {
         return newA
     }
 
-    const getUsers = useCallback(async () => {
-        await (handleGetUsers())
-            .then((res) => res.json())
-            .then((data) => setUsers(data))
-    }, [])
+    // const getUsers = useCallback(async () => {
+    //     await (handleGetUsers())
+    //         .then((res) => res.json())
+    //         .then((data) => setUser(data))
+    // }, [])
 
 
 
@@ -62,6 +66,7 @@ function SendKudos() {
                     <Box margin="large" direction='row' gap="small">
                         <Button label="Send" primary type="submit" />
                         <Button label="Clear" type='reset' onClick={() => setRecipient('')} />
+                        <Button label="Clear" onClick={() => console.log(users)} />
                     </Box>
                     <Button onClick={() => formatUsers()} label="test" />
                 </Form>

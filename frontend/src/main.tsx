@@ -49,11 +49,11 @@ const router = createBrowserRouter([
 
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <Grommet full theme={theme} background="#212121">
-    <React.StrictMode>
+  <React.StrictMode>
+    <Grommet full theme={theme} background="#212121">
       <Provider store={store}>
         <RouterProvider router={router} />
       </Provider>
-    </React.StrictMode>
-  </Grommet>
+    </Grommet>
+  </React.StrictMode>
 )
