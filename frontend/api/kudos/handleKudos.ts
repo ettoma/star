@@ -3,11 +3,8 @@ export async function handleKudos(recipient: string, message: string) {
 }
 
 export async function handleGetKudosPerUser(recipient: string) {
-    const res = await fetch('http://localhost:8000/kudos/users', {
-        method: 'POST',
-        body: JSON.stringify({
-            receiver: recipient
-        })
+    const res = await fetch(`http://localhost:8000/kudos/users&r=${recipient}`, {
+        method: 'GET',
     })
     return res
 }

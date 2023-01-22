@@ -8,6 +8,7 @@ import (
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
+	"github.com/gorilla/mux"
 )
 
 func AddKudos(w http.ResponseWriter, r *http.Request) {
@@ -49,33 +50,43 @@ func GetAllKudos(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetKudosPerUser(w http.ResponseWriter, r *http.Request) {
-
-	var user map[string]string
 	var kudos []*models.Kudos
 
-	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+	var receiver = mux.Vars(r)["receiver"]
 
-	err := json.NewDecoder(r.Body).Decode(&user)
-	utils.HandleWarning(err)
-
-	if user["sender"] != "" {
-
-		kudos, err = database.GetKudosPerSender(user["sender"])
-		if err != nil {
-			utils.HandleNotFound(w, "Sender")
-		} else {
-			utils.WriteJsonResponse(kudos, w)
-		}
-
-	} else if user["receiver"] != "" {
-
-		kudos, err = database.GetKudosPerReceiver(user["receiver"])
-		if err != nil {
-			utils.HandleNotFound(w, "Receiver")
-		} else {
-			utils.WriteJsonResponse(kudos, w)
-		}
+	kudos, err := database.GetKudosPerReceiver(receiver)
+	if err != nil {
+		utils.HandleNotFound(w, "Receiver")
+	} else {
+		utils.WriteJsonResponse(kudos, w)
 	}
+
+	// var user map[string]string
+	// var kudos []*models.Kudos
+
+	// r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+
+	// err := json.NewDecoder(r.Body).Decode(&user)
+	// utils.HandleWarning(err)
+
+	// if user["sender"] != "" {
+
+	// 	kudos, err = database.GetKudosPerSender(user["sender"])
+	// 	if err != nil {
+	// 		utils.HandleNotFound(w, "Sender")
+	// 	} else {
+	// 		utils.WriteJsonResponse(kudos, w)
+	// 	}
+
+	// } else if user["receiver"] != "" {
+
+	// 	kudos, err = database.GetKudosPerReceiver(user["receiver"])
+	// 	if err != nil {
+	// 		utils.HandleNotFound(w, "Receiver")
+	// 	} else {
+	// 		utils.WriteJsonResponse(kudos, w)
+	// 	}
+	// }
 
 }
 

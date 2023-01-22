@@ -26,7 +26,7 @@ function MyKudos() {
 
     return (
         <div>
-            {kudos.map((k: Kudo) => <p key={k.id}>{k.content}</p>)}
+            {kudos.length === 0 ? <p>no kudos for you (yet)</p> : kudos.map((k: Kudo) => <p key={k.id}>{k.content}</p>)}
         </div>
     )
 }
