@@ -8,6 +8,7 @@ import Register from '../pages/register'
 import Users from '../pages/users'
 import Home from '../pages/home'
 import SendKudos from '../pages/sendKudos'
+import MyKudos from '../pages/myKudos'
 import { Grommet } from 'grommet'
 import { theme } from './globals/styles/grommet'
 import Root from './root'
@@ -39,9 +40,14 @@ const router = createBrowserRouter([
         element: <Users />
       },
       {
-        path: "/send",
+        path: "kudos/send",
         element: <SendKudos />
+      },
+      {
+        path: "kudos",
+        element: <MyKudos />
       }
+
 
     ]
   },

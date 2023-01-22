@@ -1,23 +1,27 @@
-import { Box, Button, Form, FormField, Menu, PageHeader, TextInput } from 'grommet'
+import { Box, Button, Form, FormField, Layer, Menu, PageHeader, Tag, TextInput } from 'grommet'
 import { handleKudos } from "../api/kudos/handleKudos"
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { handleGetUsers } from '../api/users/handleUsers'
 import { User } from '../api/models/user'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../src/store'
+import { setUserList } from '../reducers/userSlice'
+import SendKudosModal from '../components/modal/sendKudosModal'
 
 
 
 function SendKudos() {
-
-    // const [users, setUsers] = useState([])
-    const [userFormat, setUserFormat] = useState([])
+    const dispatch = useDispatch()
     const users: User[] = useSelector((state: RootState) => state.users.users)
 
-    //TODO: implement Redux to propagate users to the whole app when they are fetched. Avoid fetching on every page
+    const [recipient, setRecipient] = useState("")
+    const [message, setMessage] = useState("")
+
+    const [show, setShow] = useState(false)
+
 
     useEffect(() => {
-        // getUsers()
+        getUsers()
         formatUsers()
     }, [])
 
@@ -30,20 +34,18 @@ function SendKudos() {
         return newA
     }
 
-    // const getUsers = useCallback(async () => {
-    //     await (handleGetUsers())
-    //         .then((res) => res.json())
-    //         .then((data) => setUser(data))
-    // }, [])
+    async function getUsers() {
+        const response = await (handleGetUsers())
+            .then((response) => response.json())
+            .catch((error) => console.log(error))
 
-
-
-    const [recipient, setRecipient] = useState("")
-    const [message, setMessage] = useState("")
+        dispatch(setUserList(response))
+    }
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
         handleKudos(recipient, message)
+        setShow(true)
     }
 
     const messages = {
@@ -61,14 +63,18 @@ function SendKudos() {
                         <Menu items={formatUsers()} label={recipient} />
                     </FormField>
                     <FormField label="Message">
-                        <TextInput onChange={(e) => setMessage(e.target.value)} required />
+                        <TextInput onChange={(e) => setMessage(e.target.value)} />
                     </FormField>
                     <Box margin="large" direction='row' gap="small">
                         <Button label="Send" primary type="submit" />
-                        <Button label="Clear" type='reset' onClick={() => setRecipient('')} />
-                        <Button label="Clear" onClick={() => console.log(users)} />
+                        {show && (
+                            <SendKudosModal setShow={setShow} message={message} recipient={recipient} />
+                        )}
+                        <Button label="Clear" type='reset' onClick={() => {
+                            setRecipient('')
+                            setMessage('')
+                        }} />
                     </Box>
-                    <Button onClick={() => formatUsers()} label="test" />
                 </Form>
             </Box>
         </Box>
