@@ -44,7 +44,8 @@ func main() {
 
 	r.HandleFunc("/kudos", handles.GetAllKudos).Methods("GET")
 	r.HandleFunc("/kudos", handles.AddKudos).Methods("POST")
-	r.HandleFunc("/kudos/users", handles.GetKudosPerUser).Methods("GET")
+	//TODO: make sure this endpoint takes GET request instead of POST, change the query url
+	r.HandleFunc("/kudos/users", handles.GetKudosPerUser).Methods("POST")
 	r.HandleFunc("/kudos", handles.DeleteKudos).Methods("DELETE")
 
 	r.HandleFunc("/auth-issuer", auth.GenerateJWT).Methods("POST")
