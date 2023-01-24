@@ -30,9 +30,9 @@ func main() {
 	r.Use(utils.LoggerMiddleware)
 	r.Use(utils.ContentTypeMiddleware)
 
-	authR := r.PathPrefix("/kudos/users").Subrouter()
+	authR := r.PathPrefix("/kudos").Subrouter()
 	authR.Use(utils.TokenValidationMiddleware)
-	authR.HandleFunc("&r={receiver}", handles.GetKudosPerUser).Methods("GET")
+	authR.HandleFunc("/users&r={receiver}", handles.GetKudosPerUser).Methods("GET")
 
 	// authRouter := r.PathPrefix("/kudos/users").Subrouter()
 	// authRouter.Use(utils.LoggerMiddleware)

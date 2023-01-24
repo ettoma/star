@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-var domains = [...]string{"http://localhost:5173"}
+var domains = [...]string{"http://localhost:5173", ""}
 
 func LoggerMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
