@@ -30,26 +30,23 @@ func main() {
 	r.Use(utils.LoggerMiddleware)
 	r.Use(utils.ContentTypeMiddleware)
 
+	//? These are the routes that require authentication
+	//?----------------------------------------------------------------
 	authR := r.PathPrefix("/kudos").Subrouter()
 	authR.Use(utils.TokenValidationMiddleware)
+	authR.HandleFunc("", handles.GetAllKudos).Methods("GET")
+	authR.HandleFunc("", handles.AddKudos).Methods("POST")
+	authR.HandleFunc("", handles.DeleteKudos).Methods("DELETE")
 	authR.HandleFunc("/users&r={receiver}", handles.GetKudosPerUser).Methods("GET")
+	//?----------------------------------------------------------------
 
-	// authRouter := r.PathPrefix("/kudos/users").Subrouter()
-	// authRouter.Use(utils.LoggerMiddleware)
-	// authRouter.Use(utils.Cors)
-	// authRouter.HandleFunc("&r={receiver}", handles.GetKudosPerUser).Methods("GET")
-
+	//? These routes are public and don't require token validation
+	//?----------------------------------------------------------------
 	r.HandleFunc("/", handles.Home).Methods("GET")
 
 	r.HandleFunc("/users", handles.GetAllUsers).Methods("GET", "OPTIONS")
 	r.HandleFunc("/users/user", handles.GetUserById).Methods("GET")
 	r.HandleFunc("/users", handles.DeleteUser).Methods("DELETE", "OPTIONS")
-	//TODO: implement Patch user handle
-	// r.HandleFunc("/users", handles.PatchUser).Methods("PATCH")
-
-	r.HandleFunc("/kudos", handles.GetAllKudos).Methods("GET")
-	r.HandleFunc("/kudos", handles.AddKudos).Methods("POST")
-	r.HandleFunc("/kudos", handles.DeleteKudos).Methods("DELETE")
 
 	r.HandleFunc("/auth-issuer", auth.GenerateJWT).Methods("POST")
 	r.HandleFunc("/auth", auth.ValidateJWT).Methods("POST")
@@ -57,8 +54,9 @@ func main() {
 	r.HandleFunc("/register", handles.RegisterUser).Methods("POST")
 	r.HandleFunc("/login", handles.Login).Methods("POST")
 
-	//! TODO: token validation should only be triggered for user-specific endpoints
-	// r.HandleFunc("/kudos/users&r={receiver}", handles.GetKudosPerUser).Methods("GET")
+	//TODO: implement Patch user handle
+	// r.HandleFunc("/users", handles.PatchUser).Methods("PATCH")
+	//?----------------------------------------------------------------
 
 	utils.HandleFatal(srv.ListenAndServe())
 
