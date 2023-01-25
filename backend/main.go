@@ -7,6 +7,7 @@ import (
 	"github.com/ettoma/star/auth"
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/handles"
+	mdw "github.com/ettoma/star/middlewares"
 	"github.com/ettoma/star/utils"
 	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
@@ -26,14 +27,14 @@ func main() {
 		WriteTimeout: time.Second * 15,
 	}
 
-	r.Use(utils.Cors)
-	r.Use(utils.LoggerMiddleware)
-	r.Use(utils.ContentTypeMiddleware)
+	r.Use(mdw.Cors)
+	r.Use(mdw.LoggerMiddleware)
+	r.Use(mdw.ContentTypeMiddleware)
 
 	//? These are the routes that require authentication
 	//?----------------------------------------------------------------
 	authR := r.PathPrefix("/kudos").Subrouter()
-	authR.Use(utils.TokenValidationMiddleware)
+	authR.Use(mdw.TokenValidationMiddleware)
 	authR.HandleFunc("", handles.GetAllKudos).Methods("GET")
 	authR.HandleFunc("", handles.AddKudos).Methods("POST")
 	authR.HandleFunc("", handles.DeleteKudos).Methods("DELETE")

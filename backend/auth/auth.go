@@ -3,6 +3,7 @@ package auth
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 
 func GenerateTokenString(username string) (string, error) {
 
-	key := []byte(os.Getenv("SECRET_KEY"))
+	key := []byte(os.Getenv("JWT_SECRET_KEY"))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"exp":        jwt.NewNumericDate(time.Now().Add(time.Minute * 10)),
@@ -30,6 +31,7 @@ func GenerateTokenString(username string) (string, error) {
 func ValidateToken(tokenString string) (bool, error) {
 
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		log.Print(tokenString)
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
