@@ -38,7 +38,7 @@ func main() {
 	authR.HandleFunc("", handles.GetAllKudos).Methods("GET")
 	authR.HandleFunc("", handles.AddKudos).Methods("POST")
 	authR.HandleFunc("", handles.DeleteKudos).Methods("DELETE")
-	authR.HandleFunc("/users&r={receiver}", handles.GetKudosPerUser).Methods("GET")
+	authR.HandleFunc("/{receiver}", handles.GetKudosPerUser).Methods("GET", "OPTIONS")
 	//?----------------------------------------------------------------
 
 	//? These routes are public and don't require token validation

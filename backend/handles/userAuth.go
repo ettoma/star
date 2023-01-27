@@ -69,41 +69,56 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.HandleNotFound(w, loginDetails.Username)
 	} else {
-		fmt.Println(loginDetails.Password)
-		fmt.Println(hashedPassword)
+
 		err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(loginDetails.Password))
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
 			response := models.DefaultResponse{
 				Message: err.Error(),
 				Status:  http.StatusBadRequest,
 				Success: false,
 			}
+			w.WriteHeader(http.StatusBadRequest)
 			utils.WriteJsonResponse(response, w)
 		} else {
-			response := models.TokenResponse{
-				Message: "authentication successful",
-				Status:  http.StatusOK,
-				Success: true,
-			}
-			// the password is correct but no token was passed in the payload
 
-			if loginDetails.Token == "" {
+			if loginDetails.Token == "" { // the password is correct but no token was passed in the payload
 				token, _ := auth.GenerateToken(loginDetails.Username)
-				response.Token = token
+				response := models.TokenResponse{
+					Message: "Token generated",
+					Status:  http.StatusOK,
+					Success: true,
+					Token:   token,
+				}
+				w.WriteHeader(http.StatusOK)
+				utils.WriteJsonResponse(response, w)
 			} else {
-				res, err := auth.Validate(loginDetails.Token)
+				_, err := auth.Validate(loginDetails.Token)
 				utils.HandleWarning(err)
-				if res == true {
-					response.Token = loginDetails.Token
+				if err != nil {
+					fmt.Println(err)
+					response := models.TokenResponse{
+						Message: err.Error(),
+						Status:  http.StatusBadRequest,
+						Success: false,
+					}
+
+					w.WriteHeader(http.StatusBadRequest)
+					utils.WriteJsonResponse(response, w)
 				} else {
 					token, _ := auth.GenerateToken(loginDetails.Username)
-					response.Token = token
+					response := models.TokenResponse{
+						Message: "Token is valid",
+						Status:  http.StatusOK,
+						Success: true,
+						Token:   token,
+					}
+
+					w.WriteHeader(http.StatusOK)
+					utils.WriteJsonResponse(response, w)
 				}
+
 			}
 
-			w.WriteHeader(http.StatusOK)
-			utils.WriteJsonResponse(response, w)
 		}
 	}
 
