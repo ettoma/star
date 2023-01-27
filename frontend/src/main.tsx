@@ -40,26 +40,20 @@ const router = createBrowserRouter([
         element: <Users />
       },
       {
-        path: "kudos/send",
-        element: <SendKudos />
-      },
-      {
-        path: "kudos",
+        path: '/kudos/:username',
         element: <MyKudos />
-      }
-
-
+      },
     ]
   },
 ]);
 
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <Grommet full theme={theme} background="#212121">
-      <Provider store={store}>
-        <RouterProvider router={router} />
-      </Provider>
-    </Grommet>
-  </React.StrictMode>
+
+  <Grommet full theme={theme} background="#212121">
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </Grommet>
+
 )

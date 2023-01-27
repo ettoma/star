@@ -24,7 +24,7 @@ function SignIn() {
 
     if (data.success) {
       document.cookie = "token=" + data.token + "; secure; sameSite=Lax;"
-      navigate("/users")
+      navigate(`/kudos/${username}`)
     }
   }
 
