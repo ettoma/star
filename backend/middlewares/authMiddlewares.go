@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -17,7 +16,7 @@ func TokenValidationMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(w, r)
 		} else {
 			token := strings.Split(r.Header.Get("authorization"), " ")[1]
-			fmt.Println(token)
+			// fmt.Println(token)
 
 			res, err := auth.ValidateToken(token)
 			if !res {
@@ -28,7 +27,7 @@ func TokenValidationMiddleware(next http.Handler) http.Handler {
 					Status:  http.StatusUnauthorized,
 				}, w)
 			} else {
-				w.WriteHeader(http.StatusAccepted)
+				w.WriteHeader(http.StatusOK)
 				next.ServeHTTP(w, r)
 			}
 		}

@@ -32,7 +32,7 @@ func keepAlive() {
 		} else {
 			log.Println("keep alive: success")
 			fmt.Printf("open connections: %v \n", db.Stats().OpenConnections)
-			time.Sleep(60 * time.Second)
+			time.Sleep(60 * time.Minute)
 		}
 	}
 }

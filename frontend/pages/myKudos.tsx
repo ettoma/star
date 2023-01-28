@@ -37,6 +37,7 @@ function MyKudos() {
     useEffect(() => {
         getUsers()
         formatUsers()
+        getKudosPerUser(username!)
     }, [])
 
     function formatUsers() {
@@ -66,10 +67,6 @@ function MyKudos() {
         invalid: "invalid",
         required: "required"
     }
-
-    useEffect(() => {
-        getKudosPerUser(username!)
-    }, [])
 
     async function getKudosPerUser(recipient: string) {
         const response: Response = await (handleGetKudosPerUser(recipient))

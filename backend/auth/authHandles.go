@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
 )
 
@@ -46,10 +47,18 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 	res, err := ValidateToken(token["token"])
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		utils.WriteJsonResponse(err.Error(), w)
+		utils.WriteJsonResponse(models.DefaultResponse{
+			Message: err.Error(),
+			Status:  http.StatusUnauthorized,
+			Success: res,
+		}, w)
 	} else {
 		w.WriteHeader(http.StatusAccepted)
-		utils.WriteJsonResponse(res, w)
+		utils.WriteJsonResponse(models.DefaultResponse{
+			Message: "Token successfully validated",
+			Status:  http.StatusAccepted,
+			Success: res,
+		}, w)
 	}
 
 }
