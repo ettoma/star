@@ -50,11 +50,10 @@ func ValidateToken(tokenString string) (bool, error) {
 				v, _ := exp.Int64()
 				date = time.Unix(v, 0)
 			}
-			_, err1 := database.GetUserByUsername(claims["user"].(string))
-			if err1 != nil {
+			_, errGettingUser := database.GetUserByUsername(claims["user"].(string))
+			if errGettingUser != nil {
 				return false, errors.New("user not found: " + claims["user"].(string))
 			} else {
-
 				fmt.Printf(" username: %s \n authorised: %v \n expiresAt: %s \n", claims["user"], claims["authorized"], date)
 				return true, nil
 			}
