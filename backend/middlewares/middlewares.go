@@ -34,7 +34,7 @@ func Cors(next http.Handler) http.Handler {
 		for _, domain := range domains {
 			if origin == domain {
 				allowedDomains = append(allowedDomains, origin)
-				w.Header().Add("Access-Control-Allow-Origin", "*")
+				w.Header().Add("Access-Control-Allow-Origin", origin)
 				w.Header().Add("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE")
 				w.Header().Add("Access-Control-Allow-Headers", "Authorization")
 				next.ServeHTTP(w, r)

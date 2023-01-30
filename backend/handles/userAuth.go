@@ -92,7 +92,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				utils.WriteJsonResponse(response, w)
 			} else {
-				_, err := auth.Validate(loginDetails.Token)
+				_, err := auth.ValidateToken(loginDetails.Token)
 				utils.HandleWarning(err)
 				if err != nil {
 					fmt.Println(err)

@@ -32,12 +32,6 @@ func GenerateJWT(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func Validate(tokenToValidate string) (result bool, err error) {
-	res, err := ValidateToken(tokenToValidate)
-
-	return res, nil
-}
-
 func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 	var token map[string]string
 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)

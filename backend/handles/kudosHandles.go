@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
+	"github.com/ettoma/star/auth"
 	"github.com/ettoma/star/database"
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
@@ -50,43 +52,36 @@ func GetAllKudos(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetKudosPerUser(w http.ResponseWriter, r *http.Request) {
-	var kudos []*models.Kudos
 
 	var receiver = mux.Vars(r)["receiver"]
-
-	kudos, err := database.GetKudosPerReceiver(receiver)
-	if err != nil {
-		utils.HandleNotFound(w, "Receiver")
+	var tokenString = r.Header.Get("authorization")
+	// fmt.Println("my token string: ", tokenString)
+	if len(tokenString) == 0 {
+		tokenString, _ = auth.GenerateTokenString(receiver)
 	} else {
-		utils.WriteJsonResponse(kudos, w)
+		tokenString = strings.Split(tokenString, " ")[1]
 	}
 
-	// var user map[string]string
-	// var kudos []*models.Kudos
+	var kudos []*models.Kudos
+	// TODO! implement user check before response is sent, make sure user can only access his own data
 
-	// r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+	_, err := auth.UserInQueryMatchToken(tokenString, receiver)
 
-	// err := json.NewDecoder(r.Body).Decode(&user)
-	// utils.HandleWarning(err)
+	if err != nil {
+		utils.WriteJsonResponse(models.DefaultResponse{
+			Message: err.Error(),
+			Status:  http.StatusBadRequest,
+			Success: false,
+		}, w)
+	} else {
+		kudos, err = database.GetKudosPerReceiver(receiver)
+		if err != nil {
+			utils.HandleNotFound(w, "Receiver")
+		} else {
+			utils.WriteJsonResponse(kudos, w)
+		}
 
-	// if user["sender"] != "" {
-
-	// 	kudos, err = database.GetKudosPerSender(user["sender"])
-	// 	if err != nil {
-	// 		utils.HandleNotFound(w, "Sender")
-	// 	} else {
-	// 		utils.WriteJsonResponse(kudos, w)
-	// 	}
-
-	// } else if user["receiver"] != "" {
-
-	// 	kudos, err = database.GetKudosPerReceiver(user["receiver"])
-	// 	if err != nil {
-	// 		utils.HandleNotFound(w, "Receiver")
-	// 	} else {
-	// 		utils.WriteJsonResponse(kudos, w)
-	// 	}
-	// }
+	}
 
 }
 
