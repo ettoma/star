@@ -16,14 +16,14 @@ function SignIn() {
     const response = await handleLogin({ "username": username, "password": password, "token": token })
     var data = await response.json() as LoginRequestData
 
+    document.cookie = "token=" + data.token + "; secure; sameSite=Lax;"
+
     if (data.success != true) {
-      console.log("error creating user")
-      console.log(data.message)
+      console.log("error logging in: ", data.message)
     }
 
 
     if (data.success) {
-      document.cookie = "token=" + data.token + "; secure; sameSite=Lax;"
       navigate(`/kudos/${username}`)
     }
   }
