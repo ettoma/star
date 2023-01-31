@@ -3,18 +3,15 @@ import { handleGetKudosPerUser, handleKudos } from "../api/kudos/handleKudos"
 import { useNavigate, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { User } from "../api/models/user"
+import { Kudo } from "../api/models/kudos"
 import { handleGetUsers } from "../api/users/handleUsers"
+import { unixToDate } from "../utils/parser"
 import { setUserList } from "../reducers/userSlice"
 import { RootState } from "../src/store"
-import { Box, PageHeader, FormField, TextInput, Button, Form, Menu } from "grommet"
+import { Box, PageHeader, FormField, TextInput, Button, Form, Menu, Spinner, Carousel, Card, Text, Header, NameValueList, NameValuePair, Grid, Paragraph } from "grommet"
 import SendKudosModal from "../components/modal/sendKudosModal"
 
-type Kudo = {
-    sender: string,
-    receiver: string,
-    content: string,
-    id: number
-}
+
 
 function MyKudos() {
     const [kudos, setKudos] = useState([])
@@ -35,9 +32,9 @@ function MyKudos() {
 
 
     useEffect(() => {
+        getKudosPerUser(username!)
         getUsers()
         formatUsers()
-        getKudosPerUser(username!)
     }, [])
 
     function formatUsers() {
@@ -68,17 +65,15 @@ function MyKudos() {
         required: "required"
     }
 
-    async function getKudosPerUser(recipient: string) {
-        const response: Response = await (handleGetKudosPerUser(recipient))
+    async function getKudosPerUser(receiver: string) {
+        const response: Response = await (handleGetKudosPerUser(receiver))
         const res = await response.json()
 
-        if (response.ok === true) {
+        if (response.status == 200) {
             setKudos(res)
             setIsSuccess(true)
-        }
-
-        if (res["message"] == "Token is expired") {
-            console.log("expired token")
+        } else if (res["message"] == "Token is expired" || res["message"] == "Token not provided") {
+            console.error("expired or blank token")
             setIsSuccess(false)
             navigate("/signin")
         } else if (res["message"] == "Receiver not found") {
@@ -92,9 +87,9 @@ function MyKudos() {
     return (
 
         <>
-            {isSuccess === false ?
-                <Box justify="center" gap="large" pad="large">
-                    <PageHeader title="Send Kudos" />
+            <Box justify="center" gap="large" pad="large">
+                <PageHeader title="Send Kudos" />
+                {isSuccess === true ?
                     <Box align="center">
                         <Form onSubmit={handleSubmit} validate="submit" messages={messages}>
                             <FormField label="To">
@@ -114,12 +109,66 @@ function MyKudos() {
                                 }} />
                             </Box>
                         </Form>
+                        <Box height="small" width="medium" overflow="hidden">
+                            <Carousel alignSelf="center" fill controls="selectors">
+                                {kudos.length === 0 ? <Card>No kudos yet</Card> :
+                                    kudos.map((k: Kudo) =>
+                                        <Box key={k.id}
+                                            background={{
+                                                color: "#4B4B4B"
+                                            }}
+                                            round
+                                            pad="medium"
+                                            wrap>
+                                            <Grid
+                                                fill
+                                                rows={['xxsmall', 'xsmall']}
+                                                columns={['xsmall', 'small']}
+                                                gap="small"
+                                                areas={[
+                                                    { name: 'date', start: [0, 0], end: [1, 0] },
+                                                    { name: 'sender', start: [0, 1], end: [0, 1] },
+                                                    { name: 'message', start: [1, 1], end: [1, 1] },
+                                                ]}
+                                            >
+                                                <Box gridArea="date" round pad={{
+                                                    horizontal: "medium",
+                                                    vertical: "medium"
+                                                }}>{unixToDate(k.timestamp * 1000)}</Box>
+                                                <Box gridArea="sender" background="light-5" round>
+                                                    <NameValueList pad={{
+                                                        horizontal: "medium",
+                                                        vertical: "small"
+                                                    }}>
+                                                        <NameValuePair name="sender">
+                                                            <Text>{k.sender}</Text>
+                                                        </NameValuePair>
+                                                    </NameValueList>
+                                                </Box>
+                                                <Box gridArea="message" background="light-2" round>
+                                                    <NameValueList pad={{
+                                                        horizontal: "medium",
+                                                        vertical: "small"
+                                                    }}>
+                                                        <NameValuePair name="message">
+                                                            <Text>{k.content}</Text>
+                                                        </NameValuePair>
+                                                    </NameValueList>
+                                                </Box>
+                                            </Grid>
+                                        </Box>)
+                                }
+                            </Carousel>
+                        </Box>
                     </Box>
-                    {kudos.map((k: Kudo) => <p key={k.id}>{k.content}</p>)}
-                </Box>
-                : <p>no</p>}
+                    :
+                    <Box align="center">
+                        <Spinner size="xlarge" />
+                    </Box>}
+            </Box>
         </>
     )
 }
+
 
 export default MyKudos

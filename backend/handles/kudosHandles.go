@@ -53,36 +53,37 @@ func GetAllKudos(w http.ResponseWriter, r *http.Request) {
 
 func GetKudosPerUser(w http.ResponseWriter, r *http.Request) {
 
+	var kudos []*models.Kudos
 	var receiver = mux.Vars(r)["receiver"]
 	var tokenString = r.Header.Get("authorization")
-	// fmt.Println("my token string: ", tokenString)
-	if len(tokenString) == 0 {
-		tokenString, _ = auth.GenerateTokenString(receiver)
-	} else {
-		tokenString = strings.Split(tokenString, " ")[1]
-	}
 
-	var kudos []*models.Kudos
-	// TODO! implement user check before response is sent, make sure user can only access his own data
+	if len(tokenString) == 0 || tokenString == "Bearer undefined" {
 
-	_, err := auth.UserInQueryMatchToken(tokenString, receiver)
-
-	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		utils.WriteJsonResponse(models.DefaultResponse{
-			Message: err.Error(),
+			Message: "Token not provided",
 			Status:  http.StatusBadRequest,
 			Success: false,
 		}, w)
 	} else {
-		kudos, err = database.GetKudosPerReceiver(receiver)
+		tokenString = strings.Split(tokenString, " ")[1]
+		_, err := auth.UserInQueryMatchToken(tokenString, receiver)
+
 		if err != nil {
-			utils.HandleNotFound(w, "Receiver")
+			utils.WriteJsonResponse(models.DefaultResponse{
+				Message: err.Error(),
+				Status:  http.StatusBadRequest,
+				Success: false,
+			}, w)
 		} else {
-			utils.WriteJsonResponse(kudos, w)
+			kudos, err = database.GetKudosPerReceiver(receiver)
+			if err != nil {
+				utils.HandleNotFound(w, "Receiver")
+			} else {
+				utils.WriteJsonResponse(kudos, w)
+			}
 		}
-
 	}
-
 }
 
 func DeleteKudos(w http.ResponseWriter, r *http.Request) {

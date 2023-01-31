@@ -2,24 +2,26 @@ import React, { useState } from "react"
 import { useNavigate } from "react-router"
 import LoginRequestData from "../api/models/errors"
 import { handleLogin } from "../api/users/handleUsers"
+import ErrorModal from "../components/modal/loginErrorModal"
 import { Box, Button, Form, FormField, PageHeader, TextInput } from "grommet"
 
 function SignIn() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
+  const [showErrorModal, setShowErrorModal] = useState(false)
+  const [errorMessage, setErrorMessage] = useState("")
   const navigate = useNavigate()
-
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const token = document.cookie.split("=")[1]
-    const response = await handleLogin({ "username": username, "password": password, "token": token })
+    const response = await handleLogin({ "username": username, "password": password })
     var data = await response.json() as LoginRequestData
 
-    document.cookie = "token=" + data.token + "; secure; sameSite=Lax;"
+    document.cookie = "token=" + data.token
 
     if (data.success != true) {
-      console.log("error logging in: ", data.message)
+      setShowErrorModal(true)
+      setErrorMessage(data.message)
     }
 
 
@@ -47,6 +49,9 @@ function SignIn() {
           </FormField>
           <Box margin="large">
             <Button type="submit" primary label="Sign In" />
+            {showErrorModal && (
+              <ErrorModal setShowErrorModal={setShowErrorModal} errorMessage={errorMessage} />
+            )}
           </Box>
         </Form>
       </Box>

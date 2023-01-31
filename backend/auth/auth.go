@@ -82,7 +82,7 @@ func UserInQueryMatchToken(tokenString, user string) (bool, error) {
 				if user == claims["user"].(string) {
 					return true, nil
 				} else {
-					return false, errors.New("Token does not belong to user: " + claims["user"].(string))
+					return false, errors.New("Token does not belong to user: " + user)
 				}
 			}
 

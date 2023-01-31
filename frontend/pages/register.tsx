@@ -18,6 +18,7 @@ function Register() {
         const data = await response.json()
         console.log((data as RequestData).status)
 
+        //TODO : handle errors with modal
         // if ((response.status) != 201) {
         //     console.log("error creating user")
         //     console.log(data as RequestData)

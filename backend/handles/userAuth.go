@@ -2,7 +2,6 @@ package handles
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/ettoma/star/auth"
@@ -93,16 +92,24 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				utils.WriteJsonResponse(response, w)
 			} else {
 				_, err := auth.ValidateToken(loginDetails.Token)
-				utils.HandleWarning(err)
-				if err != nil {
-					fmt.Println(err)
+				if err.Error() == "Token is expired" {
+					token, _ := auth.GenerateToken(loginDetails.Username)
+					response := models.TokenResponse{
+						Message: "Token generated",
+						Status:  http.StatusOK,
+						Success: true,
+						Token:   token,
+					}
+					w.WriteHeader(http.StatusOK)
+					utils.WriteJsonResponse(response, w)
+
+				} else if err != nil {
+					w.WriteHeader(http.StatusBadRequest)
 					response := models.TokenResponse{
 						Message: err.Error(),
 						Status:  http.StatusBadRequest,
 						Success: false,
 					}
-
-					w.WriteHeader(http.StatusBadRequest)
 					utils.WriteJsonResponse(response, w)
 				} else {
 					token, _ := auth.GenerateToken(loginDetails.Username)

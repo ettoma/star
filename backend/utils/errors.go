@@ -22,7 +22,7 @@ func HandleFatal(err error) {
 }
 
 func HandleNotFound(w http.ResponseWriter, searchKey string) {
-	w.WriteHeader(http.StatusNotFound)
+
 	response := models.DefaultResponse{
 		Message: fmt.Sprintf("%s not found", searchKey),
 		Status:  http.StatusNotFound,

@@ -15,20 +15,29 @@ func TokenValidationMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusOK)
 			next.ServeHTTP(w, r)
 		} else {
-			token := strings.Split(r.Header.Get("authorization"), " ")[1]
-			// fmt.Println(token)
+			tokenString := r.Header.Get("authorization")
 
-			res, err := auth.ValidateToken(token)
-			if !res {
-				w.WriteHeader(http.StatusUnauthorized)
+			if len(tokenString) == 0 {
+				w.WriteHeader(http.StatusBadRequest)
 				utils.WriteJsonResponse(models.DefaultResponse{
-					Message: err.Error(),
+					Message: "Token not provided",
+					Status:  http.StatusBadRequest,
 					Success: false,
-					Status:  http.StatusUnauthorized,
 				}, w)
 			} else {
-				w.WriteHeader(http.StatusOK)
-				next.ServeHTTP(w, r)
+				token := strings.Split(tokenString, " ")[1]
+				res, err := auth.ValidateToken(token)
+				if !res {
+					w.WriteHeader(http.StatusUnauthorized)
+					utils.WriteJsonResponse(models.DefaultResponse{
+						Message: err.Error(),
+						Success: false,
+						Status:  http.StatusUnauthorized,
+					}, w)
+				} else {
+					w.WriteHeader(http.StatusOK)
+					next.ServeHTTP(w, r)
+				}
 			}
 		}
 	})
