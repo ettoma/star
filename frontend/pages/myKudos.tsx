@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { handleGetKudosPerUser, handleKudos } from "../api/kudos/handleKudos"
+import { handleGetKudosPerUser, handleSendKudos } from "../api/kudos/handleKudos"
 import { useNavigate, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
 import { User } from "../api/models/user"
@@ -56,7 +56,9 @@ function MyKudos() {
 
     function handleSubmit(e: React.FormEvent) {
         e.preventDefault()
-        handleKudos(recipient, message, username!)
+        const response = handleSendKudos({ receiver: recipient, content: message, sender: username! })
+            .then((response) => response.json())
+            .catch((error) => console.log(error))
         setShow(true)
     }
 
@@ -99,7 +101,7 @@ function MyKudos() {
                                 <TextInput onChange={(e) => setMessage(e.target.value)} />
                             </FormField>
                             <Box margin="large" direction='row' gap="small">
-                                <Button label="Send" primary type="submit" />
+                                <Button label="Send" primary type="submit" onClick={handleSubmit} />
                                 {show && (
                                     <SendKudosModal setShow={setShow} message={message} recipient={recipient} />
                                 )}

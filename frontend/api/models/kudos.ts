@@ -5,3 +5,9 @@ export type Kudo = {
     id: number,
     timestamp: number
 }
+
+export type KudoPayload = {
+    sender: string,
+    receiver: string,
+    content: string,
+}

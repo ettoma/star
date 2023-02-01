@@ -1,3 +1,5 @@
+import { KudoPayload } from "../models/kudos"
+
 function getToken(): string {
 
     const token = document.cookie.split("=")[1]
@@ -10,8 +12,19 @@ function getToken(): string {
 }
 
 
-export async function handleKudos(recipient: string, message: string, sender: string) {
-    console.log(recipient, message, sender)
+export async function handleSendKudos(payload: KudoPayload) {
+    const res = await fetch(`http://127.0.0.1:8000/kudos`, {
+        method: "POST",
+        headers: new Headers({
+            Authorization: `${getToken()}`
+        }),
+        body: JSON.stringify({
+            sender: payload.sender,
+            receiver: payload.receiver,
+            content: payload.content
+        })
+    })
+    return res
 }
 
 export async function handleGetKudosPerUser(recipient: string) {
