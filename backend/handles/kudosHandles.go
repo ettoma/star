@@ -16,29 +16,51 @@ import (
 func AddKudos(w http.ResponseWriter, r *http.Request) {
 
 	var newKudos models.Kudos
-
 	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 
 	err := json.NewDecoder(r.Body).Decode(&newKudos)
 	utils.HandleWarning(err)
 
-	sender, _ := database.GetUserByUsername(newKudos.Sender)
-	if sender == nil {
-		utils.HandleNotFound(w, "Sender")
-	}
-	receiver, _ := database.GetUserByUsername(newKudos.Receiver)
-	if receiver == nil {
-		utils.HandleNotFound(w, "Receiver")
-	}
+	var tokenString = r.Header.Get("authorization")
 
-	if len(newKudos.Content) == 0 {
-		utils.HandleNotFound(w, "Content")
-	}
+	if len(tokenString) == 0 || tokenString == "Bearer undefined" {
 
-	if sender != nil && receiver != nil && len(newKudos.Content) > 0 {
-		kudos, err := database.AddKudos(newKudos.Sender, newKudos.Receiver, newKudos.Content)
-		utils.HandleWarning(err)
-		utils.WriteJsonResponse(kudos, w)
+		w.WriteHeader(http.StatusBadRequest)
+		utils.WriteJsonResponse(models.DefaultResponse{
+			Message: "Token not provided",
+			Status:  http.StatusBadRequest,
+			Success: false,
+		}, w)
+	} else {
+		tokenString = strings.Split(tokenString, " ")[1]
+		_, err := auth.UserInQueryMatchToken(tokenString, newKudos.Sender)
+
+		if err != nil {
+			utils.WriteJsonResponse(models.DefaultResponse{
+				Message: err.Error(),
+				Status:  http.StatusBadRequest,
+				Success: false,
+			}, w)
+		} else {
+			sender, _ := database.GetUserByUsername(newKudos.Sender)
+			if sender == nil {
+				utils.HandleNotFound(w, "Sender")
+			}
+			receiver, _ := database.GetUserByUsername(newKudos.Receiver)
+			if receiver == nil {
+				utils.HandleNotFound(w, "Receiver")
+			}
+
+			if len(newKudos.Content) == 0 {
+				utils.HandleNotFound(w, "Content")
+			}
+
+			if sender != nil && receiver != nil && len(newKudos.Content) > 0 {
+				kudos, err := database.AddKudos(newKudos.Sender, newKudos.Receiver, newKudos.Content)
+				utils.HandleWarning(err)
+				utils.WriteJsonResponse(kudos, w)
+			}
+		}
 	}
 
 }

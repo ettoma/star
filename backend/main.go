@@ -36,8 +36,8 @@ func main() {
 	authR := r.PathPrefix("/kudos").Subrouter()
 	authR.Use(mdw.TokenValidationMiddleware)
 	authR.HandleFunc("", handles.GetAllKudos).Methods("GET")
-	authR.HandleFunc("", handles.AddKudos).Methods("POST")
-	authR.HandleFunc("", handles.DeleteKudos).Methods("DELETE")
+	authR.HandleFunc("", handles.AddKudos).Methods("POST", "OPTIONS")
+	authR.HandleFunc("", handles.DeleteKudos).Methods("DELETE", "OPTIONS")
 	authR.HandleFunc("/{receiver}", handles.GetKudosPerUser).Methods("GET", "OPTIONS")
 	//?----------------------------------------------------------------
 
