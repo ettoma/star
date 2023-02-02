@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react"
 import { handleGetKudosPerUser, handleSendKudos } from "../api/kudos/handleKudos"
 import { useNavigate, useParams } from "react-router"
 import { useDispatch, useSelector } from "react-redux"
@@ -62,6 +62,11 @@ function MyKudos() {
         setShow(true)
     }
 
+    function clear() {
+        setMessage("")
+        setRecipient("")
+    }
+
     const messages = {
         invalid: "invalid",
         required: "required"
@@ -90,7 +95,7 @@ function MyKudos() {
 
         <>
             <Box justify="center" gap="large" pad="large">
-                <PageHeader title="Send Kudos" />
+                <PageHeader title={"Hi, " + username} />
                 {isSuccess === true ?
                     <Box align="center">
                         <Form onSubmit={handleSubmit} validate="submit" messages={messages}>
@@ -103,7 +108,7 @@ function MyKudos() {
                             <Box margin="large" direction='row' gap="small">
                                 <Button label="Send" primary type="submit" onClick={handleSubmit} />
                                 {show && (
-                                    <SendKudosModal setShow={setShow} message={message} recipient={recipient} />
+                                    <SendKudosModal setShow={setShow} clear={clear} message={message} recipient={recipient} />
                                 )}
                                 <Button label="Clear" type='reset' onClick={() => {
                                     setRecipient('')

@@ -1,5 +1,4 @@
-import "react"
-import { Box, Button, Header, Main, Menu } from 'grommet'
+import { Button, Header, Main } from 'grommet'
 import { Home as HomeIcon } from 'grommet-icons'
 import { Outlet, useNavigate } from "react-router"
 
@@ -8,9 +7,7 @@ function Root() {
     return (
         <>
             <Header>
-                <Button icon={<HomeIcon />} hoverIndicator />
-                <Menu
-                    items={[{ label: 'home', onClick: () => { navigate('/') } }]} />
+                <Button icon={<HomeIcon />} hoverIndicator onClick={() => { navigate('/') }} />
             </Header>
             <Main>
                 <Outlet />

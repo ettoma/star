@@ -91,27 +91,28 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				w.WriteHeader(http.StatusOK)
 				utils.WriteJsonResponse(response, w)
 			} else {
-				_, err := auth.ValidateToken(loginDetails.Token)
-				if err.Error() == "Token is expired" {
-					token, _ := auth.GenerateToken(loginDetails.Username)
-					response := models.TokenResponse{
-						Message: "Token generated",
-						Status:  http.StatusOK,
-						Success: true,
-						Token:   token,
+				ok, err := auth.ValidateToken(loginDetails.Token)
+				if err != nil {
+					if err.Error() == "Token is expired" {
+						token, _ := auth.GenerateToken(loginDetails.Username)
+						response := models.TokenResponse{
+							Message: "Token generated",
+							Status:  http.StatusOK,
+							Success: true,
+							Token:   token,
+						}
+						w.WriteHeader(http.StatusOK)
+						utils.WriteJsonResponse(response, w)
+					} else if err != nil {
+						w.WriteHeader(http.StatusBadRequest)
+						response := models.TokenResponse{
+							Message: err.Error(),
+							Status:  http.StatusBadRequest,
+							Success: false,
+						}
+						utils.WriteJsonResponse(response, w)
 					}
-					w.WriteHeader(http.StatusOK)
-					utils.WriteJsonResponse(response, w)
-
-				} else if err != nil {
-					w.WriteHeader(http.StatusBadRequest)
-					response := models.TokenResponse{
-						Message: err.Error(),
-						Status:  http.StatusBadRequest,
-						Success: false,
-					}
-					utils.WriteJsonResponse(response, w)
-				} else {
+				} else if ok == true {
 					token, _ := auth.GenerateToken(loginDetails.Username)
 					response := models.TokenResponse{
 						Message: "Token is valid",

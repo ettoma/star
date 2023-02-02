@@ -1,14 +1,17 @@
 import { Box, Button, Layer, Tag } from 'grommet'
 import React from 'react'
 
-function SendKudosModal({ setShow, message, recipient }: { setShow: React.Dispatch<React.SetStateAction<boolean>>, message: string, recipient: string }) {
+function SendKudosModal({ setShow, clear, message, recipient }: { setShow: React.Dispatch<React.SetStateAction<boolean>>, clear: VoidFunction, message: string, recipient: string }) {
     return (
         <Layer
             background={{
                 color: "rgba(20,20,20,0.95)"
             }}
             full={true}
-            onEsc={() => setShow(false)}
+            onEsc={() => {
+                setShow(false)
+                clear()
+            }}
             onClickOutside={() => setShow(false)}
         >
             <Box justify="center" gap="large" pad="large" margin={{
