@@ -63,6 +63,24 @@ func ValidateToken(tokenString string) (bool, error) {
 
 }
 
+func RefreshToken(username string) (string, error) {
+
+	key := []byte(os.Getenv("JWT_SECRET_KEY"))
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":        jwt.NewNumericDate(time.Now().Add(time.Hour * 3600)),
+		"authorized": true,
+		"user":       username,
+	})
+
+	tokenString, err := token.SignedString(key)
+	if err != nil {
+		return "", err
+	}
+	return tokenString, nil
+
+}
+
 func UserInQueryMatchToken(tokenString, user string) (bool, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

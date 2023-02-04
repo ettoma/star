@@ -7,8 +7,9 @@ type DefaultResponse struct {
 }
 
 type TokenResponse struct {
-	Message string `json:"message"`
-	Status  int    `json:"status"`
-	Success bool   `json:"success"`
-	Token   string `json:"token"`
+	Message   string `json:"message"`
+	Status    int    `json:"status"`
+	Success   bool   `json:"success"`
+	Token     string `json:"token,omitempty"`
+	Refresher string `json:"refreshToken,omitempty"`
 }

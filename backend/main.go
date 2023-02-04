@@ -39,6 +39,10 @@ func main() {
 	authR.HandleFunc("", handles.AddKudos).Methods("POST", "OPTIONS")
 	authR.HandleFunc("", handles.DeleteKudos).Methods("DELETE", "OPTIONS")
 	authR.HandleFunc("/{receiver}", handles.GetKudosPerUser).Methods("GET", "OPTIONS")
+
+	tokensR := r.PathPrefix("/auth-refresh").Subrouter()
+	tokensR.Use(mdw.TokenValidationMiddleware)
+	tokensR.HandleFunc("", auth.RefreshJWT).Methods("POST", "OPTIONS")
 	//?----------------------------------------------------------------
 
 	//? These routes are public and don't require token validation

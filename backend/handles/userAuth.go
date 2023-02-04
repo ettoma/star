@@ -79,14 +79,16 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusBadRequest)
 			utils.WriteJsonResponse(response, w)
 		} else {
-
+			refreshToken, _ := auth.RefreshToken(loginDetails.Username)
 			if loginDetails.Token == "" { // the password is correct but no token was passed in the payload
 				token, _ := auth.GenerateToken(loginDetails.Username)
+
 				response := models.TokenResponse{
-					Message: "Token generated",
-					Status:  http.StatusOK,
-					Success: true,
-					Token:   token,
+					Message:   "Token generated",
+					Status:    http.StatusOK,
+					Success:   true,
+					Token:     token,
+					Refresher: refreshToken,
 				}
 				w.WriteHeader(http.StatusOK)
 				utils.WriteJsonResponse(response, w)
@@ -96,10 +98,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 					if err.Error() == "Token is expired" {
 						token, _ := auth.GenerateToken(loginDetails.Username)
 						response := models.TokenResponse{
-							Message: "Token generated",
-							Status:  http.StatusOK,
-							Success: true,
-							Token:   token,
+							Message:   "Token generated",
+							Status:    http.StatusOK,
+							Success:   true,
+							Token:     token,
+							Refresher: refreshToken,
 						}
 						w.WriteHeader(http.StatusOK)
 						utils.WriteJsonResponse(response, w)
@@ -115,10 +118,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 				} else if ok == true {
 					token, _ := auth.GenerateToken(loginDetails.Username)
 					response := models.TokenResponse{
-						Message: "Token is valid",
-						Status:  http.StatusOK,
-						Success: true,
-						Token:   token,
+						Message:   "Token is valid",
+						Status:    http.StatusOK,
+						Success:   true,
+						Token:     token,
+						Refresher: refreshToken,
 					}
 
 					w.WriteHeader(http.StatusOK)

@@ -10,6 +10,7 @@ import { setUserList } from "../reducers/userSlice"
 import { RootState } from "../src/store"
 import { Box, PageHeader, FormField, TextInput, Button, Form, Menu, Spinner, Carousel, Card, Text, Header, NameValueList, NameValuePair, Grid, Paragraph } from "grommet"
 import SendKudosModal from "../components/modal/sendKudosModal"
+import { refreshToken } from "../api/auth/tokens"
 
 
 
@@ -35,6 +36,7 @@ function MyKudos() {
         getKudosPerUser(username!)
         getUsers()
         formatUsers()
+        setInterval(() => refreshToken(username!), 90000)
     }, [])
 
     function formatUsers() {

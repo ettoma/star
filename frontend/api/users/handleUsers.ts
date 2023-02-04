@@ -1,4 +1,5 @@
 import { RegisterPayload, LoginPayload } from "../models/user"
+import { getTokenFromCookies } from "../auth/tokens"
 
 
 export async function handleRegister(payload: RegisterPayload) {
@@ -15,24 +16,13 @@ export async function handleRegister(payload: RegisterPayload) {
 }
 
 export async function handleLogin(payload: LoginPayload) {
-    function getToken(): string {
-
-        const token = document.cookie.split("=")[1]
-
-        if (token == null) {
-            return ""
-        } else {
-            return token
-        }
-    }
-
     const res = await fetch("http://127.0.0.1:8000/login", {
         credentials: "same-origin",
         method: "POST",
         body: JSON.stringify({
             username: payload.username,
             password: payload.password,
-            token: getToken()
+            token: getTokenFromCookies().split(" ")[1]
         })
     })
 

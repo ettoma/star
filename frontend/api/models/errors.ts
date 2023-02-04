@@ -3,6 +3,7 @@ type LoginRequestData = {
     message: string,
     status: number,
     token: string,
+    refreshToken: string,
 }
 
 export default LoginRequestData

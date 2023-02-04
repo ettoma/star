@@ -1,22 +1,12 @@
 import { KudoPayload } from "../models/kudos"
-
-function getToken(): string {
-
-    const token = document.cookie.split("=")[1]
-
-    if (token == null) {
-        return ""
-    } else {
-        return "Bearer " + token
-    }
-}
+import { getTokenFromCookies } from "../auth/tokens"
 
 
 export async function handleSendKudos(payload: KudoPayload) {
     const res = await fetch(`http://127.0.0.1:8000/kudos`, {
         method: "POST",
         headers: new Headers({
-            Authorization: `${getToken()}`
+            Authorization: `${getTokenFromCookies()}`
         }),
         body: JSON.stringify({
             sender: payload.sender,
@@ -31,7 +21,7 @@ export async function handleGetKudosPerUser(recipient: string) {
     const res = await fetch(`http://127.0.0.1:8000/kudos/${recipient}`, {
         method: 'GET',
         headers: new Headers({
-            Authorization: `${getToken()}`
+            Authorization: `${getTokenFromCookies()}`
         })
     })
     return res

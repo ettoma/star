@@ -18,6 +18,7 @@ function SignIn() {
     var data = await response.json() as LoginRequestData
 
     document.cookie = "token=" + data.token
+    document.cookie = "refresh_token=" + data.refreshToken
 
     if (data.success != true) {
       setShowErrorModal(true)

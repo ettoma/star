@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/ettoma/star/models"
 	"github.com/ettoma/star/utils"
@@ -55,4 +56,45 @@ func ValidateJWT(w http.ResponseWriter, r *http.Request) {
 		}, w)
 	}
 
+}
+
+func RefreshJWT(w http.ResponseWriter, r *http.Request) {
+	tokenString := r.Header.Get("authorization")
+	var username map[string]string
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+
+	err := json.NewDecoder(r.Body).Decode(&username)
+	utils.HandleWarning(err)
+
+	if len(tokenString) == 0 || tokenString == "Bearer undefined" {
+
+		w.WriteHeader(http.StatusBadRequest)
+		utils.WriteJsonResponse(models.DefaultResponse{
+			Message: "Token not provided",
+			Status:  http.StatusBadRequest,
+			Success: false,
+		}, w)
+	} else {
+		tokenString = strings.Split(tokenString, " ")[1]
+		res, err := ValidateToken(tokenString)
+		if err != nil {
+			w.WriteHeader(http.StatusConflict)
+			utils.WriteJsonResponse(models.DefaultResponse{
+				Message: err.Error(),
+				Status:  http.StatusConflict,
+				Success: res,
+			}, w)
+		} else {
+			token, _ := GenerateToken(username["username"])
+			refreshToken, _ := RefreshToken(username["username"])
+			response := models.TokenResponse{
+				Message:   "Token refreshed",
+				Status:    http.StatusOK,
+				Success:   true,
+				Token:     token,
+				Refresher: refreshToken,
+			}
+			utils.WriteJsonResponse(response, w)
+		}
+	}
 }
