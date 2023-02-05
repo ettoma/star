@@ -36,7 +36,7 @@ function MyKudos() {
         getKudosPerUser(username!)
         getUsers()
         formatUsers()
-        setInterval(() => refreshToken(username!), 90000)
+        // setInterval(() => refreshToken(username!), 100000)
     }, [])
 
     function formatUsers() {
